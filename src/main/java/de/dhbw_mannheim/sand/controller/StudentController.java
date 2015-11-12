@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import de.dhbw_mannheim.sand.annotations.LoggedIn;
+import de.dhbw_mannheim.sand.annotations.RuntimeBroker;
 import de.dhbw_mannheim.sand.model.Course;
 import de.dhbw_mannheim.sand.model.Student;
 import de.dhbw_mannheim.sand.model.User;
@@ -25,6 +27,7 @@ public class StudentController {
 	@Autowired
 	private StudentService service;
 	
+	@RuntimeBroker
 	@RequestMapping(method = RequestMethod.GET, value = "/{id}")
 	public ResponseEntity<Student> getStudentById(
 			@RequestHeader(value="authorization", defaultValue="X") String authorization, 
