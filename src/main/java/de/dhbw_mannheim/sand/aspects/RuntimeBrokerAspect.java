@@ -4,6 +4,8 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.After;
@@ -17,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import de.dhbw_mannheim.sand.annotations.RuntimeBroker;
 import de.dhbw_mannheim.sand.model.Session;
 import de.dhbw_mannheim.sand.service.SessionService;
 
@@ -26,6 +29,7 @@ import de.dhbw_mannheim.sand.service.SessionService;
 public class RuntimeBrokerAspect {
 	
 	long beforeTime;
+	private static final Logger logger = LogManager.getLogger(RuntimeBroker.class);
 	
 	@Autowired
 	private HttpServletRequest request;
@@ -42,12 +46,13 @@ public class RuntimeBrokerAspect {
 	private void loggingMethod() {
 	}
 	@Before("loggingMethod()")
-	private void beforeMethod(){
-		System.out.println("Current Time: "+System.currentTimeMillis());
+	private void beforeMethod(JoinPoint joinpoint){
 		beforeTime = System.currentTimeMillis();
 	}
 	@After("loggingMethod()")
-	private void afterMethod(){
-		System.out.println("Elapsed Time: " + (System.currentTimeMillis()-beforeTime));
+	private void afterMethod(JoinPoint joinpoint){
+		long elapsed = System.currentTimeMillis()-beforeTime;
+		logger.info(joinpoint.toShortString() + " Method Runtime: "+ elapsed + "ms");
+		
 	}
 }
