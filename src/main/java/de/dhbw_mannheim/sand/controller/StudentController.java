@@ -27,7 +27,6 @@ public class StudentController {
 	@Autowired
 	private StudentService service;
 	
-	@RuntimeBroker
 	@RequestMapping(method = RequestMethod.GET, value = "/{id}")
 	public ResponseEntity<Student> getStudentById(
 			@RequestHeader(value="authorization", defaultValue="X") String authorization, 

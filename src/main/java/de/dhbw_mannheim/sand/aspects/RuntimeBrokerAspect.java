@@ -37,19 +37,16 @@ public class RuntimeBrokerAspect {
 	@Autowired
 	private SessionService sessionService;
 	
+	@Pointcut("execution(* de.dhbw_mannheim.sand.controller.*.*(..))")
+	private void controllerMethod() {
+	}
 	
-	@Pointcut("within (@de.dhbw_mannheim.sand.annotations.RuntimeBroker *)")
-	private void loggingType() {
-	}
-
-	@Pointcut("execution(@de.dhbw_mannheim.sand.annotations.RuntimeBroker * *.*(..))")
-	private void loggingMethod() {
-	}
-	@Before("loggingMethod()")
+	@Before("controllerMethod()")
 	private void beforeMethod(JoinPoint joinpoint){
+		logger.info("Entering method " + joinpoint.toShortString());
 		beforeTime = System.currentTimeMillis();
 	}
-	@After("loggingMethod()")
+	@After("controllerMethod()")
 	private void afterMethod(JoinPoint joinpoint){
 		long elapsed = System.currentTimeMillis()-beforeTime;
 		logger.info(joinpoint.toShortString() + " Method Runtime: "+ elapsed + "ms");
