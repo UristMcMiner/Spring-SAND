@@ -10,14 +10,14 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import de.dhbw_mannheim.sand.model.Role;
-import de.dhbw_mannheim.sand.model.Student;
+import de.dhbw_mannheim.sand.model.Teacher;
 import de.dhbw_mannheim.sand.model.User;
 import de.dhbw_mannheim.sand.repository.TeacherRepository;
 import de.dhbw_mannheim.sand.repository.UserRepository;
 
 @Service
 public class TeacherServiceImpl extends RoleServiceImpl implements
-		StudentService {
+		TeacherService {
 
 	@Autowired
 	private TeacherRepository repository;
@@ -42,14 +42,14 @@ public class TeacherServiceImpl extends RoleServiceImpl implements
 	@Override
 	@Transactional(propagation=Propagation.REQUIRED)
 	public int addRole(Role role) {
-		role = repository.save((Student)role);
+		role = repository.save((Teacher)role);
 		return role.getId();
 	}
 
 	@Override
 	@Transactional(propagation=Propagation.REQUIRED)
 	public void editRole(Role role) {
-		repository.save((Student)role);
+		repository.save((Teacher)role);
 	}
 
 	@Override

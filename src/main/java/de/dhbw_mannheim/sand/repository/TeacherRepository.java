@@ -6,10 +6,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import de.dhbw_mannheim.sand.model.Role;
-import de.dhbw_mannheim.sand.model.Student;
+import de.dhbw_mannheim.sand.model.Teacher;
 import de.dhbw_mannheim.sand.model.User;
 
-public interface TeacherRepository extends JpaRepository<Student,Integer> {
+public interface TeacherRepository extends JpaRepository<Teacher,Integer> {
 	
 	@Query("select r from Teacher r where r.user = ?1")
 	List<Role> findByUser(User user);
