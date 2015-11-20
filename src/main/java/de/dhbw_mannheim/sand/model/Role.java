@@ -103,7 +103,7 @@ public abstract class Role extends LazyObject {
 	
 	@Override
 	@GeneratedValue
-	public int getId(){
+	public Integer getId(){
 		return super.getId();
 	}
 

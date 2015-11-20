@@ -83,7 +83,7 @@ public class Student extends Role {
 	
 	@Override
 	@GeneratedValue(strategy=GenerationType.AUTO)
-	public int getId(){
+	public Integer getId(){
 		return super.getId();
 	}
 
