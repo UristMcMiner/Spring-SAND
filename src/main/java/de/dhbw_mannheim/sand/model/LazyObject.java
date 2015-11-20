@@ -32,7 +32,7 @@ public abstract class LazyObject {
 	}
 
 	@JsonProperty("id")
-	public int getId() {
+	public Integer getId() {
 		return id;
 	}
 
