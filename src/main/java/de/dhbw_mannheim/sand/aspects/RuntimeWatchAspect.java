@@ -19,7 +19,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
-import de.dhbw_mannheim.sand.annotations.RuntimeBroker;
 import de.dhbw_mannheim.sand.model.Session;
 import de.dhbw_mannheim.sand.service.SessionService;
 
