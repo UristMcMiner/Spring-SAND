@@ -26,7 +26,7 @@ import de.dhbw_mannheim.sand.service.SessionService;
 @Aspect
 @Component
 @Scope("request")
-public class RuntimeBrokerAspect {
+public class RuntimeWatchAspect {
 	
 	long beforeTime;
 	private static final Logger logger = LogManager.getLogger(RuntimeBroker.class);

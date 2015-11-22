@@ -56,6 +56,8 @@ public class PrototypeAspect {
 	
 	@Around("loggingMethod()")
 	private void aroundMethod(ProceedingJoinPoint joinpoint){
+		Object[] args = joinpoint.getArgs();
+		for(int i = 0; i < args.length; i++)System.out.println(args[i]);
 		
 	}
 	@After("loggingMethod()")
