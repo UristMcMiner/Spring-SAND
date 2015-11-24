@@ -3,6 +3,7 @@ package de.dhbw_mannheim.sand.service;
 import static org.junit.Assert.assertTrue;
 
 import java.io.Console;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.After;
@@ -133,12 +134,25 @@ public class UserServiceTest {
 	}
 	@Test
 	public void testGetRolesByUser(){
-		User user = userService.getUserById(2);
-		List<Role> roles  = userService.getRolesByUser(1, true);
-		List<Role> expectedRoles = user.getRoles();
+		List<Role> roles  = new ArrayList<Role>();
+		List<Role> expectedRoles = new ArrayList<Role>();
+		
+		User user = userService.getUserById(1);
+
+		for(Role role : userService.getRolesByUser(1, true)){
+			roles.add(role);
+			System.out.println("Roles: " + role);
+		}
+		
+		for(Role role : user.getRoles()){
+			expectedRoles.add(role);
+
+			System.out.println("ExpectedRoles: " + role);
+		}
 		
 		for(int i=0; i<=roles.size(); i++) {
 			assertTrue(roles.get(i).getId() == expectedRoles.get(i).getId());
+
 		}
 	}
 	
