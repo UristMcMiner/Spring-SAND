@@ -28,7 +28,7 @@ import de.dhbw_mannheim.sand.service.SessionService;
 public class RuntimeWatchAspect {
 	
 	long beforeTime;
-	private static final Logger logger = LogManager.getLogger(RuntimeBroker.class);
+	private static final Logger logger = LogManager.getLogger(RuntimeWatchAspect.class);
 	
 	@Autowired
 	private HttpServletRequest request;
