@@ -2,6 +2,7 @@ package de.dhbw_mannheim.sand.service;
 
 import static org.junit.Assert.assertTrue;
 
+import java.io.Console;
 import java.util.List;
 
 import org.junit.After;
@@ -17,6 +18,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import de.dhbw_mannheim.sand.SAND;
+import de.dhbw_mannheim.sand.model.Role;
 import de.dhbw_mannheim.sand.model.User;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -66,7 +68,13 @@ public class UserServiceTest {
 
 	@Test
 	public void testGetUserByEmail() {
-//		fail("Not yet implemented");
+		User expectedUser = userService.getUserById(1);
+		User user = userService.getUserByEmail("Rainer.Colgen@dhbw.mannheim.de");
+		assertTrue(user.getFirstname() == expectedUser.getFirstname());
+		assertTrue(user.getLastname() == expectedUser.getLastname());
+		assertTrue(user.getEmail() == expectedUser.getEmail());
+		assertTrue(user.getId() == expectedUser.getId());
+		
 	}
 
 	@Test
@@ -121,6 +129,18 @@ public class UserServiceTest {
 		userService.changePassword(user);
 		user = userService.getUserById(1);
 		assertTrue(userService.checkPassword("New Password", user));
+	}
+	@Test
+	public void testGetRolesByUser(){
+		List<Role> roles  = userService.getRolesByUser(1, true);
+		for(Role role : roles){
+		System.out.println(role);
+		}
+		
+	}
+	@Test
+	public void testGetProjectsByUser(){
+		
 	}
 
 }
