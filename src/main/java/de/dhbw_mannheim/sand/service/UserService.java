@@ -2,10 +2,14 @@ package de.dhbw_mannheim.sand.service;
 
 import java.util.List;
 
+import de.dhbw_mannheim.sand.model.ResearchProject;
+import de.dhbw_mannheim.sand.model.Role;
 import de.dhbw_mannheim.sand.model.User;
 
 public interface UserService {
 
+	public List<Role> getRolesByUser(int id, boolean lazy);
+	public List<ResearchProject> getProjectsByUser(int id, boolean lazy);
 	public List<User> getAllUsers();  
 
     /**

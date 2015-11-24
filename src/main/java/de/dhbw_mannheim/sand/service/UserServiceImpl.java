@@ -17,9 +17,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import de.dhbw_mannheim.sand.model.Admin;
 import de.dhbw_mannheim.sand.model.ResearchProject;
 import de.dhbw_mannheim.sand.model.ResearchProjectOffer;
 import de.dhbw_mannheim.sand.model.Role;
+import de.dhbw_mannheim.sand.model.Secretary;
+import de.dhbw_mannheim.sand.model.Student;
+import de.dhbw_mannheim.sand.model.Supervisor;
+import de.dhbw_mannheim.sand.model.Teacher;
 import de.dhbw_mannheim.sand.model.User;
 import de.dhbw_mannheim.sand.repository.ResearchProjectOfferRepository;
 import de.dhbw_mannheim.sand.repository.StudentRepository;
@@ -32,7 +37,7 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private UserRepository repository;
-	
+	//TODO wirklich nicht Typ Rolerepository?
 	@Autowired
 	private StudentRepository roleRepository;
 	
@@ -123,6 +128,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	@Transactional(propagation=Propagation.REQUIRED)
 	public void changePassword(User user) {
 		User userInDB = repository.findOne(user.getId());
 		if (!checkPassword(userInDB.getPassword(), user)) {
@@ -189,4 +195,21 @@ public class UserServiceImpl implements UserService {
 		}
     	
     }
+
+	@Override
+	public List<Role> getRolesByUser(int id, boolean lazy) {
+		Role role = roleRepository.findOne(id);
+		return null;
+	}
+
+	@Override
+	public List<ResearchProject> getProjectsByUser(int id, boolean lazy) {
+		List<ResearchProject> resultList = null;
+		User user = repository.findById(id);
+		List<ResearchProjectOffer> projects = researchProjectRepository.findByCreator(user);
+		for(ResearchProjectOffer project : projects){
+			resultList.add(project);
+		}
+		return resultList;
+	}
 }
