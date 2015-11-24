@@ -17,18 +17,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import de.dhbw_mannheim.sand.model.Admin;
 import de.dhbw_mannheim.sand.model.ResearchProject;
 import de.dhbw_mannheim.sand.model.ResearchProjectOffer;
 import de.dhbw_mannheim.sand.model.Role;
-import de.dhbw_mannheim.sand.model.Secretary;
-import de.dhbw_mannheim.sand.model.Student;
-import de.dhbw_mannheim.sand.model.Supervisor;
-import de.dhbw_mannheim.sand.model.Teacher;
 import de.dhbw_mannheim.sand.model.User;
 import de.dhbw_mannheim.sand.repository.ResearchProjectOfferRepository;
 import de.dhbw_mannheim.sand.repository.StudentRepository;
 import de.dhbw_mannheim.sand.repository.UserRepository;
+import de.dhbw_mannheim.sand.repository.TeacherRepository;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -37,9 +33,12 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private UserRepository repository;
-	//TODO wirklich nicht Typ Rolerepository?
+	
 	@Autowired
-	private StudentRepository roleRepository;
+	private StudentRepository studentRepository;
+	
+	@Autowired
+	private TeacherRepository teacherRepository;
 	
 	@Autowired
 	private ResearchProjectOfferRepository researchProjectRepository;
@@ -140,16 +139,29 @@ public class UserServiceImpl implements UserService {
     //TODO Rollenrepository? Wie soll die Methode aussehen?
 	@Override
 	public List<Role> getRolesByUser(int id, boolean lazy) {
-		Role role = roleRepository.findOne(id);
-		return null;
+		List<Role> roles = null;
+		User user = repository.findOne(id);
+		List<Role> roleTeacher = teacherRepository.findByUser(user);
+		for(Role role: roleTeacher){
+			roles.add(role);
+		}
+		List<Role> roleStudent = studentRepository.findByUser(user);
+		for(Role role: roleStudent){
+			roles.add(role);
+		}
+		return roles;
 	}
 
 	@Override
 	public List<ResearchProject> getProjectsByUser(int id, boolean lazy) {
 		List<ResearchProject> resultList = null;
 		User user = repository.findById(id);
-		List<ResearchProjectOffer> projects = researchProjectRepository.findByCreator(user);
-		for(ResearchProjectOffer project : projects){
+		List<ResearchProjectOffer> projectsByCreator = researchProjectRepository.findByCreator(user);
+		for(ResearchProjectOffer project : projectsByCreator){
+			resultList.add(project);
+		}
+		List<ResearchProjectOffer> projectsByUser = researchProjectRepository.findByInterestedUser(user);
+		for(ResearchProjectOffer project : projectsByUser){
 			resultList.add(project);
 		}
 		return resultList;
@@ -184,7 +196,7 @@ public class UserServiceImpl implements UserService {
     
     private User modifyUser(User user) {
 		if ((user != null) && (user.getDeleted()==0)) {
-			List<Role> roles = roleRepository.findByUser(user); 
+			List<Role> roles = studentRepository.findByUser(user); 
 			for (Role role: roles) {
 				role.setUser(new User(user.getId()));
 			}
