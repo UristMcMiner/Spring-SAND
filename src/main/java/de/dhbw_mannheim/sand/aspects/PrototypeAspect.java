@@ -113,6 +113,13 @@ public class PrototypeAspect {
 		
 	}
 	
+	/**
+	
+	These Methods are for checking the authorization of each role.
+	It parses the methodName to determine the running Method and decides if the roles
+	are authorized to execute/access the Data/Method
+	
+	**/
 	private boolean AdminCheck(String methodName){
 		return true;
 	}
