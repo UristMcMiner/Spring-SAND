@@ -136,16 +136,18 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
-    //TODO Rollenrepository? Wie soll die Methode aussehen?
 	@Override
 	public List<Role> getRolesByUser(int id, boolean lazy) {
-		List<Role> roles = null;
+
+		List<Role> roles = new ArrayList<Role>();
+		List<Role> roleTeacher= new ArrayList<Role>();
+		List<Role> roleStudent =  new ArrayList<Role>();
 		User user = repository.findOne(id);
-		List<Role> roleTeacher = teacherRepository.findByUser(user);
+		roleTeacher = teacherRepository.findByUser(user);
 		for(Role role: roleTeacher){
 			roles.add(role);
 		}
-		List<Role> roleStudent = studentRepository.findByUser(user);
+		roleStudent = studentRepository.findByUser(user);
 		for(Role role: roleStudent){
 			roles.add(role);
 		}
@@ -154,13 +156,15 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public List<ResearchProject> getProjectsByUser(int id, boolean lazy) {
-		List<ResearchProject> resultList = null;
+		List<ResearchProject> resultList = new ArrayList<ResearchProject>();
+		List<ResearchProjectOffer> projectsByCreator = new ArrayList<ResearchProjectOffer>();
+		List<ResearchProjectOffer> projectsByUser = new ArrayList<ResearchProjectOffer>();
 		User user = repository.findById(id);
-		List<ResearchProjectOffer> projectsByCreator = researchProjectRepository.findByCreator(user);
+		projectsByCreator = researchProjectRepository.findByCreator(user);
 		for(ResearchProjectOffer project : projectsByCreator){
 			resultList.add(project);
 		}
-		List<ResearchProjectOffer> projectsByUser = researchProjectRepository.findByInterestedUser(user);
+		projectsByUser = researchProjectRepository.findByInterestedUser(user);
 		for(ResearchProjectOffer project : projectsByUser){
 			resultList.add(project);
 		}

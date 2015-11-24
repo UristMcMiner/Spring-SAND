@@ -18,6 +18,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import de.dhbw_mannheim.sand.SAND;
+import de.dhbw_mannheim.sand.model.ResearchProject;
 import de.dhbw_mannheim.sand.model.Role;
 import de.dhbw_mannheim.sand.model.User;
 
@@ -69,7 +70,7 @@ public class UserServiceTest {
 	@Test
 	public void testGetUserByEmail() {
 		User expectedUser = userService.getUserById(1);
-		User user = userService.getUserByEmail("Rainer.Colgen@dhbw.mannheim.de");
+		User user = userService.getUserByEmail("Rainer.Colgen@dhbw-mannheim.de");
 		assertTrue(user.getFirstname() == expectedUser.getFirstname());
 		assertTrue(user.getLastname() == expectedUser.getLastname());
 		assertTrue(user.getEmail() == expectedUser.getEmail());
@@ -132,14 +133,21 @@ public class UserServiceTest {
 	}
 	@Test
 	public void testGetRolesByUser(){
+		User user = userService.getUserById(2);
 		List<Role> roles  = userService.getRolesByUser(1, true);
-		for(Role role : roles){
-		System.out.println(role);
-		}
+		List<Role> expectedRoles = user.getRoles();
 		
+		for(int i=0; i<=roles.size(); i++) {
+			assertTrue(roles.get(i).getId() == expectedRoles.get(i).getId());
+		}
 	}
+	
 	@Test
 	public void testGetProjectsByUser(){
+		 List<ResearchProject> projects  = userService.getProjectsByUser(1, true);
+			for(ResearchProject project : projects){
+				System.out.println(project);
+				}
 		
 	}
 
