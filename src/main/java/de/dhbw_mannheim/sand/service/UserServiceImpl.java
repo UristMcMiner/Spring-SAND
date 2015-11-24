@@ -137,6 +137,24 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
+    //TODO Rollenrepository? Wie soll die Methode aussehen?
+	@Override
+	public List<Role> getRolesByUser(int id, boolean lazy) {
+		Role role = roleRepository.findOne(id);
+		return null;
+	}
+
+	@Override
+	public List<ResearchProject> getProjectsByUser(int id, boolean lazy) {
+		List<ResearchProject> resultList = null;
+		User user = repository.findById(id);
+		List<ResearchProjectOffer> projects = researchProjectRepository.findByCreator(user);
+		for(ResearchProjectOffer project : projects){
+			resultList.add(project);
+		}
+		return resultList;
+	}
+
     private byte[] hashPassword(String password, int iterations, byte[] salt) {
             String algorithm = "PBKDF2WithHmacSHA1";
             int hashLength = 160;
@@ -196,20 +214,4 @@ public class UserServiceImpl implements UserService {
     	
     }
 
-	@Override
-	public List<Role> getRolesByUser(int id, boolean lazy) {
-		Role role = roleRepository.findOne(id);
-		return null;
-	}
-
-	@Override
-	public List<ResearchProject> getProjectsByUser(int id, boolean lazy) {
-		List<ResearchProject> resultList = null;
-		User user = repository.findById(id);
-		List<ResearchProjectOffer> projects = researchProjectRepository.findByCreator(user);
-		for(ResearchProjectOffer project : projects){
-			resultList.add(project);
-		}
-		return resultList;
-	}
 }

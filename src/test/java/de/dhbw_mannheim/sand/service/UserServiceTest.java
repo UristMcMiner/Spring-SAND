@@ -122,5 +122,13 @@ public class UserServiceTest {
 		user = userService.getUserById(1);
 		assertTrue(userService.checkPassword("New Password", user));
 	}
+	@Test
+	public void testGetRolesByUser(){
+		
+	}
+	@Test
+	public void testGetProjectsByUser(){
+		
+	}
 
 }
