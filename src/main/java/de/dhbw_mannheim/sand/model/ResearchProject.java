@@ -111,4 +111,12 @@ public class ResearchProject extends LazyObject {
 	public void setCreator(User creator) {
 		this.creator = creator;
 	}
+
+	public int getDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(int deleted) {
+		this.deleted = deleted;
+	}
 }
