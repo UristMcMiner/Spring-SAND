@@ -140,14 +140,14 @@ public class UserServiceImpl implements UserService {
 	public List<Role> getRolesByUser(int id, boolean lazy) {
 
 		List<Role> roles = new ArrayList<Role>();
-		List<Role> roleTeacher= new ArrayList<Role>();
-		List<Role> roleStudent =  new ArrayList<Role>();
+//		List<Role> roleTeacher= new ArrayList<Role>();
+//		List<Role> roleStudent =  new ArrayList<Role>();
 		User user = repository.findOne(id);
-		roleTeacher = teacherRepository.findByUser(user);
+		List<Role> roleTeacher = teacherRepository.findByUser(user);
 		for(Role role: roleTeacher){
 			roles.add(role);
 		}
-		roleStudent = studentRepository.findByUser(user);
+		List<Role> roleStudent = studentRepository.findByUser(user);
 		for(Role role: roleStudent){
 			roles.add(role);
 		}
@@ -200,12 +200,12 @@ public class UserServiceImpl implements UserService {
     
     private User modifyUser(User user) {
 		if ((user != null) && (user.getDeleted()==0)) {
-			List<Role> roles = studentRepository.findByUser(user); 
-			for (Role role: roles) {
-				role.setUser(new User(user.getId()));
-			}
-			user.setRoles(roles);
-
+//			List<Role> roles = studentRepository.findByUser(user); 
+//			for (Role role: roles) {
+//				role.setUser(new User(user.getId()));
+//			}
+//			user.setRoles(roles);
+			user.setRoles(getRolesByUser(user.getId(), false));
 			List<ResearchProjectOffer> projectsByCreator = researchProjectRepository.findByCreator(user);
 			for (ResearchProject project: projectsByCreator) {
 				project.setCreator(new User(project.getCreator().getId()));

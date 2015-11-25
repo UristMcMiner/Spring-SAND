@@ -150,7 +150,7 @@ public class UserServiceTest {
 			System.out.println("ExpectedRoles: " + role);
 		}
 		
-		for(int i=0; i<=roles.size(); i++) {
+		for(int i=0; i<roles.size(); i++) {
 			assertTrue(roles.get(i).getId() == expectedRoles.get(i).getId());
 
 		}
