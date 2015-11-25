@@ -22,6 +22,7 @@ import org.springframework.stereotype.Component;
 
 import de.dhbw_mannheim.sand.annotations.Prototype;
 import de.dhbw_mannheim.sand.aspects.authorization.AuthorizationChecker;
+import de.dhbw_mannheim.sand.model.LazyObject;
 import de.dhbw_mannheim.sand.model.Login;
 import de.dhbw_mannheim.sand.model.Role;
 import de.dhbw_mannheim.sand.model.Session;
@@ -85,8 +86,6 @@ public class PrototypeAspect {
 		if (targetClass.equals("SessionController")) {
 			return joinpoint.proceed();
 		}
-
-		boolean isAuthorized = false;
 		User user = null;
 		
 		String userLogin = "";
@@ -105,12 +104,24 @@ public class PrototypeAspect {
 				authorizationChecker = sessionControllerAuthorizationChecker;
 			else if ( targetClass.equals("StudentController"))
 				authorizationChecker = studentControllerAuthorizationChecker;
-			boolean authorized= true;
+			boolean authorized= true;//Change to false as soon as methods are implemented
 			Object param = args[1];
 			
 			switch (targetMethod) {
+				case "getById": 
+				case "getStudentById":
 				case "getUserById":
 					authorized = authorizationChecker.checkGetById(user, (Integer) param);
+					break;
+				case "add":
+					authorized = authorizationChecker.checkAdd(user, (LazyObject)param);
+					break;
+				case "delete":
+					authorized = authorizationChecker.checkDelete(user, (Integer) param);
+					break;
+				case "edit":
+					authorized = authorizationChecker.checkUpdate(user, (LazyObject)param);
+					break;
 			}
 			
 		if (!authorized) {
