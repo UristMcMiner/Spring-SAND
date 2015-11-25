@@ -1,6 +1,7 @@
 package de.dhbw_mannheim.sand.aspects;
 
 import java.nio.file.AccessDeniedException;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -53,7 +54,10 @@ public class PrototypeAspect {
 	@Autowired
 	private SessionService sessionService;
 	
+	@Autowired
+	private AuthorizationChecker userControllerAuthorizationChecker;
 	
+	private AuthorizationChecker authorizationChecker;
 	
 	@Pointcut("within (@de.dhbw_mannheim.sand.annotations.Prototype *)")
 	private void loggingType() {
@@ -66,49 +70,73 @@ public class PrototypeAspect {
 	@Around("loggingMethod()")
 	private Object aroundMethod(ProceedingJoinPoint joinpoint) throws Throwable{
 		Object[] args = joinpoint.getArgs();
-		logger.info("Calling Method: " + joinpoint.toShortString());
-		
+		String[] parts = joinpoint.toShortString().split("Controller");
+		String targetMethod = parts[1].substring(1,parts[1].length() - 5);
+		String targetClass = joinpoint.getTarget().getClass().getSimpleName();
+		logger.info("Method / Class: "+ targetMethod + " " + targetClass);
+
+		if (targetClass.equals("SessionController")) {
+			return joinpoint.proceed();
+		}
+
 		boolean isAuthorized = false;
-		
 		User user = null;
 		
 		String userLogin = "";
-		try{
-			Login login = (Login)args[0];
-			//Gets the User Object which is attached to the Request
-			user = userService.getUserByLoginAndPassword(login.getLogin(), login.getPassword());
-			userLogin = user.getLogin();
 			
-			if(user.isAdmin()){
-				logger.info("User " + user.getLogin() + " is Admin");
-				isAuthorized = AdminCheck(joinpoint.toShortString());//Check if admin is eligible
+//			Login login = (Login)args[0];
+			String authorization = (String) args[0];
+			user = sessionService.getSessionById(UUID.fromString(authorization)).getUser();
+			//Gets the User Object which is attached to the Request
+//			user = userService.getUserByLoginAndPassword(login.getLogin(), login.getPassword());
+			userLogin = user.getLogin();
+			System.out.println(user.getRoles());
+			
+			if (targetClass.equals("UserController")) {
+				authorizationChecker = userControllerAuthorizationChecker;
 			}
-			if(user.isSecretary()){
-				logger.info("User "+ user.getLogin() +" is Secretary");
-				if(!isAuthorized)isAuthorized = SecretaryCheck(joinpoint.toShortString());//Check if secretary is eligible
+			
+			boolean authorized= true;
+			Object param = args[1];
+			
+			switch (targetMethod) {
+				case "getUserById":
+					authorized = authorizationChecker.checkGetById(user, (Integer) param);
 			}
-			if(user.isStudent()){
-				logger.info("User "+ user.getLogin() +" is Student");
-				if(!isAuthorized)isAuthorized = StudentCheck(joinpoint.toShortString());;//Check if student is eligible
-			}
-			if(user.isSupervisor()){
-				logger.info("User "+ user.getLogin() +" is Supervisor");
-				if(!isAuthorized)isAuthorized = SupervisorCheck(joinpoint.toShortString());//Check if supervisor is eligible
-			}
-			if(user.isTeacher()){
-				logger.info("User "+ user.getLogin() +" is Teacher");
-				if(!isAuthorized)isAuthorized = TeacherCheck(joinpoint.toShortString());//Check if teacher is eligible 
-			}
-		}catch(Exception e){
-			//e.printStackTrace();
-			logger.info("No valid Credentials passed: "+args[0]);
+			
+//			if(user.isAdmin()){
+//				logger.info("User " + user.getLogin() + " is Admin");
+//				isAuthorized = AdminCheck(joinpoint.toShortString());//Check if admin is eligible
+//			}
+//			if(user.isSecretary()){
+//				logger.info("User "+ user.getLogin() +" is Secretary");
+//				if(!isAuthorized)isAuthorized = SecretaryCheck(joinpoint.toShortString());//Check if secretary is eligible
+//			}
+//			if(user.isStudent()){
+//				logger.info("User "+ user.getLogin() +" is Student");
+//				if(!isAuthorized)isAuthorized = StudentCheck(joinpoint.toShortString());;//Check if student is eligible
+//			}
+//			if(user.isSupervisor()){
+//				logger.info("User "+ user.getLogin() +" is Supervisor");
+//				if(!isAuthorized)isAuthorized = SupervisorCheck(joinpoint.toShortString());//Check if supervisor is eligible
+//			}
+//			if(user.isTeacher()){
+//				logger.info("User "+ user.getLogin() +" is Teacher");
+//				if(!isAuthorized)isAuthorized = TeacherCheck(joinpoint.toShortString());//Check if teacher is eligible 
+//			}
+//		}catch(Exception e){
+//			//e.printStackTrace();
+//			logger.info("No valid Credentials passed: "+args[0]);
+//		}
+		if (!authorized) {
+			return new ResponseEntity<Object>(HttpStatus.FORBIDDEN);
 		}
-		if(!isAuthorized){
-			if(!GenericCheck(joinpoint.toShortString())){//Checks if the method is publicly available
-			throw new AccessDeniedException("User "+ userLogin +" not Authorized");}
-			else {logger.info("Access to public method " + joinpoint.toShortString() + " by anonymous user");
-			}
-		}
+//		if(!isAuthorized){
+//			if(!GenericCheck(joinpoint.toShortString())){//Checks if the method is publicly available
+//			throw new AccessDeniedException("User "+ userLogin +" not Authorized");}
+//			else {logger.info("Access to public method " + joinpoint.toShortString() + " by anonymous user");
+//			}
+//		}
 		return joinpoint.proceed();
 		
 	}
