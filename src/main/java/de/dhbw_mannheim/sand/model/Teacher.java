@@ -22,8 +22,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * here
  */
 @Entity
-@DiscriminatorValue(value="1")
-@Table(name="teachers")
+@Table(name="teacher")
 @JsonIgnoreProperties({ "typedId" })
 public class Teacher extends Role {
 
