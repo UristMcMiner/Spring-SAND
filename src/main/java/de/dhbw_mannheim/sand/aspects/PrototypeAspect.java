@@ -21,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import de.dhbw_mannheim.sand.annotations.Prototype;
+import de.dhbw_mannheim.sand.aspects.authorization.AuthorizationChecker;
 import de.dhbw_mannheim.sand.model.Login;
 import de.dhbw_mannheim.sand.model.Role;
 import de.dhbw_mannheim.sand.model.Session;
@@ -56,6 +57,12 @@ public class PrototypeAspect {
 	
 	@Autowired
 	private AuthorizationChecker userControllerAuthorizationChecker;
+	@Autowired
+	private AuthorizationChecker studentControllerAuthorizationChecker;
+	@Autowired
+	private AuthorizationChecker researchProjectOfferControllerAuthorizationChecker;
+	@Autowired
+	private AuthorizationChecker sessionControllerAuthorizationChecker;
 	
 	private AuthorizationChecker authorizationChecker;
 	
@@ -84,18 +91,20 @@ public class PrototypeAspect {
 		
 		String userLogin = "";
 			
-//			Login login = (Login)args[0];
 			String authorization = (String) args[0];
 			user = sessionService.getSessionById(UUID.fromString(authorization)).getUser();
 			//Gets the User Object which is attached to the Request
-//			user = userService.getUserByLoginAndPassword(login.getLogin(), login.getPassword());
 			userLogin = user.getLogin();
 			System.out.println(user.getRoles());
 			
-			if (targetClass.equals("UserController")) {
+			if (targetClass.equals("UserController")) 
 				authorizationChecker = userControllerAuthorizationChecker;
-			}
-			
+			else if ( targetClass.equals("ResearchProjectOfferController"))
+				authorizationChecker = researchProjectOfferControllerAuthorizationChecker;
+			else if ( targetClass.equals("SessionController"))
+				authorizationChecker = sessionControllerAuthorizationChecker;
+			else if ( targetClass.equals("StudentController"))
+				authorizationChecker = studentControllerAuthorizationChecker;
 			boolean authorized= true;
 			Object param = args[1];
 			
@@ -104,71 +113,10 @@ public class PrototypeAspect {
 					authorized = authorizationChecker.checkGetById(user, (Integer) param);
 			}
 			
-//			if(user.isAdmin()){
-//				logger.info("User " + user.getLogin() + " is Admin");
-//				isAuthorized = AdminCheck(joinpoint.toShortString());//Check if admin is eligible
-//			}
-//			if(user.isSecretary()){
-//				logger.info("User "+ user.getLogin() +" is Secretary");
-//				if(!isAuthorized)isAuthorized = SecretaryCheck(joinpoint.toShortString());//Check if secretary is eligible
-//			}
-//			if(user.isStudent()){
-//				logger.info("User "+ user.getLogin() +" is Student");
-//				if(!isAuthorized)isAuthorized = StudentCheck(joinpoint.toShortString());;//Check if student is eligible
-//			}
-//			if(user.isSupervisor()){
-//				logger.info("User "+ user.getLogin() +" is Supervisor");
-//				if(!isAuthorized)isAuthorized = SupervisorCheck(joinpoint.toShortString());//Check if supervisor is eligible
-//			}
-//			if(user.isTeacher()){
-//				logger.info("User "+ user.getLogin() +" is Teacher");
-//				if(!isAuthorized)isAuthorized = TeacherCheck(joinpoint.toShortString());//Check if teacher is eligible 
-//			}
-//		}catch(Exception e){
-//			//e.printStackTrace();
-//			logger.info("No valid Credentials passed: "+args[0]);
-//		}
 		if (!authorized) {
 			return new ResponseEntity<Object>(HttpStatus.FORBIDDEN);
 		}
-//		if(!isAuthorized){
-//			if(!GenericCheck(joinpoint.toShortString())){//Checks if the method is publicly available
-//			throw new AccessDeniedException("User "+ userLogin +" not Authorized");}
-//			else {logger.info("Access to public method " + joinpoint.toShortString() + " by anonymous user");
-//			}
-//		}
 		return joinpoint.proceed();
 		
-	}
-	
-	/**
-	
-	These Methods are for checking the authorization of each role.
-	It parses the methodName to determine the running Method and decides if the roles
-	are authorized to execute/access the Data/Method
-	
-	**/
-	private boolean AdminCheck(String methodName){
-		return true;
-	}
-
-	private boolean SecretaryCheck(String methodName){
-		return true;
-	}
-	
-	private boolean StudentCheck(String methodName){
-		return true;
-	}
-
-	private boolean SupervisorCheck(String methodName){
-		return true;
-	}
-
-	private boolean TeacherCheck(String methodName){
-		return true;
-	}
-	
-	private boolean GenericCheck(String methodName){
-		return true;
 	}
 }

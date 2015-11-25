@@ -1,4 +1,4 @@
-package de.dhbw_mannheim.sand.aspects;
+package de.dhbw_mannheim.sand.aspects.authorization;
 
 import de.dhbw_mannheim.sand.model.LazyObject;
 import de.dhbw_mannheim.sand.model.User;

@@ -1,4 +1,4 @@
-package de.dhbw_mannheim.sand.aspects;
+package de.dhbw_mannheim.sand.aspects.authorization;
 
 import org.springframework.stereotype.Component;
 
@@ -6,7 +6,7 @@ import de.dhbw_mannheim.sand.model.LazyObject;
 import de.dhbw_mannheim.sand.model.User;
 
 @Component
-public class UserControllerAuthenticationChecker implements AuthorizationChecker {
+public class UserControllerAuthorizationChecker implements AuthorizationChecker {
 	
 	/* (non-Javadoc)
 	 * @see de.dhbw_mannheim.sand.aspects.AuthorizationChecker#checkGetById(de.dhbw_mannheim.sand.model.User, int)
