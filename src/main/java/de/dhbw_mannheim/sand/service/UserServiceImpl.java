@@ -101,6 +101,10 @@ public class UserServiceImpl implements UserService {
 	public void editUser(User user) {
 		User userInDB = repository.findOne(user.getId());
 		if (checkPassword(user.getPassword(), userInDB)) {
+            user.setHashedPassword(userInDB.getHashedPassword());
+            user.setIterations(userInDB.getIterations());
+            user.setSalt(userInDB.getSalt());
+            user.setDeleted(0);
 			repository.saveAndFlush(user);
 		} else {
 			throw new RuntimeException();
