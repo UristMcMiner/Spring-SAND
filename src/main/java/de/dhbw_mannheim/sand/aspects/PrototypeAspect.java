@@ -94,7 +94,6 @@ public class PrototypeAspect {
 			user = sessionService.getSessionById(UUID.fromString(authorization)).getUser();
 			//Gets the User Object which is attached to the Request
 			userLogin = user.getLogin();
-			System.out.println(user.getRoles());
 			
 			if (targetClass.equals("UserController")) 
 				authorizationChecker = userControllerAuthorizationChecker;

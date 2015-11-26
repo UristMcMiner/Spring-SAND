@@ -40,4 +40,10 @@ public class UserControllerAuthorizationChecker implements AuthorizationChecker 
 		return true;
 	}
 
+	@Override
+	public boolean checkOther(User user) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

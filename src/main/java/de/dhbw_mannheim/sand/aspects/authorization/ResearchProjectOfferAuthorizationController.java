@@ -29,4 +29,11 @@ public class ResearchProjectOfferAuthorizationController implements Authorizatio
 		return true;
 	}
 
+	@Override
+	public boolean checkOther(User user) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	
+
 }
