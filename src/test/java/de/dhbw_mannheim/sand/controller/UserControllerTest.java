@@ -79,7 +79,7 @@ public class UserControllerTest {
 		result.andDo(print());
 		result.andExpect(status().isOk());
 		result.andExpect(jsonPath("$.login").value("Rainer_Colgen"));
-		getRequest = get("/sand/users/111");
+		getRequest = get("/sand/users/9999");
 		getRequest.header("authorization", authorization);
 		result = mvc.perform(getRequest);
 		result.andExpect(status().isNotFound());
@@ -164,6 +164,64 @@ public class UserControllerTest {
 	}
 	
 	@Test
+	public void testEdit() throws Exception {
+		Login login = new Login();
+		login.setLogin("Rainer_Colgen");
+		login.setPassword("Rainer_Colgen");
+		ObjectMapper mapper = new ObjectMapper();
+		PrettyPrinter printer = new DefaultPrettyPrinter();
+		ObjectWriter writer = mapper.writer().with(printer);
+		String json = writer.writeValueAsString(login);
+		MockHttpServletRequestBuilder postRequest = post("/sand/session/")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(json);
+		MvcResult result0= mvc.perform(postRequest).andReturn();
+		String object = (String) result0.getResponse().getContentAsString();
+		System.out.println(object);
+		int finish = object.indexOf("user")-3;
+		String authorization = object.substring(7, finish);
+		
+		//add User with random name for editing later
+		String firstName = randomString(6);
+		String lastName = randomString(7);
+		String content = "{\"login\" : \"" + firstName + "_" + lastName + "\","
+				+ "\"firstname\" : \"" + firstName + "\","
+				+ "\"lastname\" : \"" + lastName + "\","
+				+ "\"email\" : \"" + firstName + "." + lastName + "@dhbw-mannheim.de\","
+				+ "\"deleted\" : 0,"
+				+ "\"roles\" : [ ],"
+				+ "\"password\" : \"" + firstName + "_" + lastName + "\"}";	
+		MockHttpServletRequestBuilder postRequest1 = post("/sand/users/")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(content);
+		postRequest1.header("authorization", authorization);
+		ResultActions result;
+		result = mvc.perform(postRequest1);
+		result.andExpect(status().isCreated());
+		User addedUser = mapper.readValue(result.andReturn().getResponse().getContentAsString(), User.class);
+		
+		//edit user's email address (by switching first and last name) and insert user's id and put it
+		content = "{\"id\" : " + addedUser.getId() + ","
+				+ "\"login\" : \"" + firstName + "_" + lastName + "\","
+				+ "\"firstname\" : \"" + firstName + "\","
+				+ "\"lastname\" : \"" + lastName + "\","
+				+ "\"email\" : \"" + lastName + "." + firstName + "@dhbw-mannheim.de\","
+				+ "\"deleted\" : 0,"
+				+ "\"roles\" : [ ],"
+				+ "\"password\" : \"" + firstName + "_" + lastName + "\"}";	
+		
+		
+		MockHttpServletRequestBuilder putRequest = put("/sand/users/")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(content);
+		putRequest.header("authorization", authorization);
+		result = mvc.perform(putRequest);
+		result.andDo(print());
+		result.andExpect(status().isOk());
+		result.andExpect(jsonPath("$.email").value(lastName + "." + firstName + "@dhbw-mannheim.de"));
+	}
+	
+	@Test
 	public void testDelete() throws Exception {
 		Login login = new Login();
 		login.setLogin("Rainer_Colgen");
@@ -209,7 +267,7 @@ public class UserControllerTest {
 		result.andExpect(content().string("true"));
 		
 		//now try to delete non existing user
-		deleteRequest = delete("/sand/users/111");
+		deleteRequest = delete("/sand/users/9999");
 		deleteRequest.header("authorization", authorization);
 		result = mvc.perform(deleteRequest);
 		result.andDo(print());
@@ -262,7 +320,7 @@ public class UserControllerTest {
 		result.andExpect(status().isOk());
 		
 		//try changing password of User which doesn't exist in DB with this ID
-		addedUser.setId(111);
+		addedUser.setId(9999);
 		pwdRequest = new PasswordChangeRequest(addedUser, firstName + "_" + lastName, lastName + "_" + firstName);
 		postRequest = post("sand/users/password")
 				.contentType(MediaType.APPLICATION_JSON)
