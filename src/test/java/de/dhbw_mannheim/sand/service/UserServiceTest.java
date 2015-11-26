@@ -141,13 +141,13 @@ public class UserServiceTest {
 
 		for(Role role : userService.getRolesByUser(1, true)){
 			roles.add(role);
-			System.out.println("Roles: " + role);
+			System.out.println("Roles: " + role.getId());
 		}
 		
 		for(Role role : user.getRoles()){
 			expectedRoles.add(role);
 
-			System.out.println("ExpectedRoles: " + role);
+			System.out.println("ExpectedRoles: " + role.getId());
 		}
 		
 		for(int i=0; i<roles.size(); i++) {
@@ -158,10 +158,23 @@ public class UserServiceTest {
 	
 	@Test
 	public void testGetProjectsByUser(){
-		 List<ResearchProject> projects  = userService.getProjectsByUser(1, true);
-			for(ResearchProject project : projects){
-				System.out.println(project);
-				}
+		 List<ResearchProject> projects  = new ArrayList<ResearchProject>();
+		 List<ResearchProject> expectedProjects  = new ArrayList<ResearchProject>();
+		 User user = userService.getUserById(1);
+		 for(ResearchProject project: userService.getProjectsByUser(1, true)){
+			projects.add(project);
+			System.out.println("Projects: " + "ID: " +project.getId() + " Title: " + project.getTitle() );
+		}
+		 
+		 for(ResearchProject project : user.getResearchProjects()){
+			 expectedProjects.add(project);
+			 System.out.println("Projects: " + "ID: " +project.getId() + " Title: " + project.getTitle() );
+		 }
+		 for(int i= 0; i<projects.size();i++){
+			 assertTrue(projects.get(i).getTitle() == expectedProjects.get(i).getTitle());
+			 assertTrue(projects.get(i).getId() == expectedProjects.get(i).getId());
+		 }
+
 		
 	}
 
