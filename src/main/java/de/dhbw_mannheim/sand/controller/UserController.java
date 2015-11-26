@@ -95,7 +95,7 @@ public class UserController {
 	}
 	
 	/**
-	 * REST-Endpoint for editing an User. NOT TESTED SUCCESSFULLY YET
+	 * REST-Endpoint for editing an User.
 	 *
 	 * @param User user
 	 * @return edited User
