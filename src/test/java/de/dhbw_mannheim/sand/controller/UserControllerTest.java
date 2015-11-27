@@ -62,7 +62,7 @@ public class UserControllerTest {
 		System.out.println(object);
 		int finish = object.indexOf("user")-3;
 		String authorization = object.substring(7, finish);
-		
+		System.out.println("AUTH: "+authorization);
 		MockHttpServletRequestBuilder getRequest = get("/sand/users/1");
 		getRequest.header("authorization", authorization);
 		ResultActions result;
