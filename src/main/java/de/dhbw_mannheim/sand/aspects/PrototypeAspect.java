@@ -71,21 +71,23 @@ public class PrototypeAspect {
 	private void loggingType() {
 	}
 
-	@Pointcut("execution(* de.dhbw_mannheim.sand.controller.*.*(..))")
+	@Pointcut("execution(@de.dhbw_mannheim.sand.annotations.Prototype * *.*(..))")
+//	@Pointcut("execution(* de.dhbw_mannheim.sand.controller.*.*(..))")
 	private void loggingMethod() {
 	}
 
 	@Around("loggingMethod()")
 	private Object aroundMethod(ProceedingJoinPoint joinpoint) throws Throwable{
-		Object[] args = joinpoint.getArgs();
-		String[] parts = joinpoint.toShortString().split("Controller");
-		String targetMethod = parts[1].substring(1,parts[1].length() - 5);
 		String targetClass = joinpoint.getTarget().getClass().getSimpleName();
-		logger.info("Method / Class: "+ targetMethod + " " + targetClass);
-
 		if (targetClass.equals("SessionController")) {
 			return joinpoint.proceed();
 		}
+
+		Object[] args = joinpoint.getArgs();
+		String[] parts = joinpoint.toShortString().split("Controller");
+		String targetMethod = parts[1].substring(1,parts[1].length() - 5);
+		logger.info("Method / Class: "+ targetMethod + " " + targetClass);
+
 		User user = null;
 		
 		String userLogin = "";

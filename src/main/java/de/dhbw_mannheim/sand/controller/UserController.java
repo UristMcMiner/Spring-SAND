@@ -1,5 +1,6 @@
 package de.dhbw_mannheim.sand.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import de.dhbw_mannheim.sand.annotations.LoggedIn;
 import de.dhbw_mannheim.sand.model.PasswordChangeRequest;
+import de.dhbw_mannheim.sand.model.ResearchProject;
+import de.dhbw_mannheim.sand.model.ResearchProjectOffer;
+import de.dhbw_mannheim.sand.model.Role;
 import de.dhbw_mannheim.sand.model.User;
 import de.dhbw_mannheim.sand.repository.UserRepository;
 import de.dhbw_mannheim.sand.service.UserService;
@@ -67,6 +71,7 @@ public class UserController {
 		System.out.println(authorization + " " + id);
 		User user = null;
 		if ((user = service.getUserById(id)) != null) {
+			modifyUser(user);
 			return new ResponseEntity<User>(user, HttpStatus.OK);
 		} 
 		else {
@@ -165,5 +170,18 @@ public class UserController {
 		user.setPassword(passwordChangeRequest.getNewPassword());
 		service.changePassword(user);
 		return new ResponseEntity<PasswordChangeRequest>(passwordChangeRequest, HttpStatus.OK);
+	}
+	
+	private void modifyUser(User user) {
+		List<Role> roles = new ArrayList<>();
+		for (Role role: user.getRoles()) {
+			roles.add(new Role(role.getId()));
+		}
+		user.setRoles(roles);
+		List<ResearchProject> projects = new ArrayList<>();
+		for (ResearchProject project: user.getResearchProjects()) {
+			projects.add(new ResearchProject(project.getId()));
+		}
+		user.setResearchProjects(projects);
 	}
 }

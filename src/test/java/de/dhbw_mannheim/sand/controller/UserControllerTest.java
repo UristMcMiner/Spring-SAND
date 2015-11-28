@@ -12,12 +12,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.List;
 import java.util.Random;
 
+import javax.transaction.Transactional;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -40,8 +43,9 @@ import de.dhbw_mannheim.sand.model.User;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = SAND.class)
+@Transactional
+@Rollback(value=true)
 @WebAppConfiguration
-
 public class UserControllerTest {
 
 	@Autowired
@@ -291,6 +295,7 @@ public class UserControllerTest {
 		System.out.println(object);
 		int finish = object.indexOf("user")-3;
 		String authorization = object.substring(7, finish);
+		System.out.println(authorization);
 		
 		//add User with random name for changing its password later
 		String firstName = randomString(6);
