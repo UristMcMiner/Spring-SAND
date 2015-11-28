@@ -1,5 +1,7 @@
 package de.dhbw_mannheim.sand.controller;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import javax.websocket.server.PathParam;
@@ -16,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import de.dhbw_mannheim.sand.model.Login;
+import de.dhbw_mannheim.sand.model.ResearchProject;
+import de.dhbw_mannheim.sand.model.Role;
 import de.dhbw_mannheim.sand.model.Session;
 import de.dhbw_mannheim.sand.model.User;
 import de.dhbw_mannheim.sand.service.SessionService;
@@ -90,6 +94,7 @@ public class SessionController {
 		User user = userService.getUserByLoginAndPassword(login.getLogin(), login.getPassword());
 
 		if (user != null) {
+			modifyUser(user);
 			Session session = new Session(null, user);
 			sessionService.addSession(session);
 			
@@ -113,4 +118,18 @@ public class SessionController {
 
 		return new ResponseEntity<Boolean>(HttpStatus.NOT_FOUND);
 	}
+	
+	private void modifyUser(User user) {
+		List<Role> roles = new ArrayList<>();
+		for (Role role: user.getRoles()) {
+			roles.add(new Role(role.getId()));
+		}
+		user.setRoles(roles);
+		List<ResearchProject> projects = new ArrayList<>();
+		for (ResearchProject project: user.getResearchProjects()) {
+			projects.add(new ResearchProject(project.getId()));
+		}
+		user.setResearchProjects(projects);
+	}
+
 }
