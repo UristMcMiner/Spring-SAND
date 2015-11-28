@@ -30,7 +30,7 @@ public class ResearchProjectOfferAuthorizationController implements Authorizatio
 	}
 
 	@Override
-	public boolean checkOther(User user) {
+	public boolean checkOther(User user, String method, Object param) {
 		// TODO Auto-generated method stub
 		return false;
 	}
