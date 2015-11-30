@@ -101,6 +101,10 @@ public class UserServiceImpl implements UserService {
 	public void editUser(User user) {
 		User userInDB = repository.findOne(user.getId());
 		if (checkPassword(user.getPassword(), userInDB)) {
+            user.setHashedPassword(userInDB.getHashedPassword());
+            user.setIterations(userInDB.getIterations());
+            user.setSalt(userInDB.getSalt());
+            user.setDeleted(0);
 			repository.saveAndFlush(user);
 		} else {
 			throw new RuntimeException();
@@ -136,10 +140,12 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
-    //TODO Rollenrepository? Wie soll die Methode aussehen?
 	@Override
 	public List<Role> getRolesByUser(int id, boolean lazy) {
-		List<Role> roles = null;
+
+		List<Role> roles = new ArrayList<Role>();
+//		List<Role> roleTeacher= new ArrayList<Role>();
+//		List<Role> roleStudent =  new ArrayList<Role>();
 		User user = repository.findOne(id);
 		List<Role> roleTeacher = teacherRepository.findByUser(user);
 		for(Role role: roleTeacher){
@@ -154,13 +160,15 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public List<ResearchProject> getProjectsByUser(int id, boolean lazy) {
-		List<ResearchProject> resultList = null;
+		List<ResearchProject> resultList = new ArrayList<ResearchProject>();
+		List<ResearchProjectOffer> projectsByCreator = new ArrayList<ResearchProjectOffer>();
+		List<ResearchProjectOffer> projectsByUser = new ArrayList<ResearchProjectOffer>();
 		User user = repository.findById(id);
-		List<ResearchProjectOffer> projectsByCreator = researchProjectRepository.findByCreator(user);
+		projectsByCreator = researchProjectRepository.findByCreator(user);
 		for(ResearchProjectOffer project : projectsByCreator){
 			resultList.add(project);
 		}
-		List<ResearchProjectOffer> projectsByUser = researchProjectRepository.findByInterestedUser(user);
+		projectsByUser = researchProjectRepository.findByInterestedUser(user);
 		for(ResearchProjectOffer project : projectsByUser){
 			resultList.add(project);
 		}
@@ -196,11 +204,7 @@ public class UserServiceImpl implements UserService {
     
     private User modifyUser(User user) {
 		if ((user != null) && (user.getDeleted()==0)) {
-			List<Role> roles = studentRepository.findByUser(user); 
-			for (Role role: roles) {
-				role.setUser(new User(user.getId()));
-			}
-			user.setRoles(roles);
+			user.setRoles(getRolesByUser(user.getId(), false));
 
 			List<ResearchProjectOffer> projectsByCreator = researchProjectRepository.findByCreator(user);
 			for (ResearchProject project: projectsByCreator) {

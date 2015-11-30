@@ -28,7 +28,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 @JsonTypeName("student")
 /*
  * The fronted uses this id internally but filtering it out on the client side is rather tricky so we simply exclude it
- * here
+ * herel
  */
 @JsonIgnoreProperties({ "typedId" })
 public class Student extends Role {
@@ -83,7 +83,7 @@ public class Student extends Role {
 	
 	@Override
 	@GeneratedValue(strategy=GenerationType.AUTO)
-	public int getId(){
+	public Integer getId(){
 		return super.getId();
 	}
 
