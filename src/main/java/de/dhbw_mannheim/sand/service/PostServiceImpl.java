@@ -28,13 +28,14 @@ public class PostServiceImpl implements PostService {
 	
 	@Override
 	public Post getPostById(int id) {
-		Post post = postRepository.findOne(id);
+		Post post = postRepository.findByIdAndDeleted(id, 0);
 		return post;
 	}
 	
 	@Override
 	public List<Post> getAllPostsByThreadId(int id, boolean lazy) {
 		List<Post> allPostsByThreadId = new ArrayList<>();
+		postRepository.findByThreadId(id);
 		return allPostsByThreadId;
 	}
 	
@@ -52,7 +53,9 @@ public class PostServiceImpl implements PostService {
 	
 	@Override
 	public void deletePostById(int id) {
-		// TODO Auto-generated method stub
+
+		Post post = postRepository.findByIdAndDeleted(id, 0);
+		postRepository.delete(post);		
 
 	}
 
