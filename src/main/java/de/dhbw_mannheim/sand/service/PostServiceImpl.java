@@ -1,5 +1,6 @@
 package de.dhbw_mannheim.sand.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -10,8 +11,10 @@ import javax.ejb.Stateless;
 import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import de.dhbw_mannheim.sand.model.Post;
+import de.dhbw_mannheim.sand.repository.PostRepository;
 
 @Stateless
 @LocalBean
@@ -26,17 +29,20 @@ public class PostServiceImpl implements PostService {
 	public PostServiceImpl() {
 		
 	}
+	@Autowired
+	private PostRepository postRepository;
 	
 	@Override
 	public Post getPostById(int id) {
-		// TODO Auto-generated method stub
-		return null;
+		Post post = postRepository.findOne(id);
+		return post;
 	}
 	
 	@Override
 	public List<Post> getAllPostsByThreadId(int id, boolean lazy) {
-		// TODO Auto-generated method stub
-		return null;
+		List<Post> allPostsByThreadId = new ArrayList<>();
+		
+		return allPostsByThreadId;
 	}
 	
 	@Override
