@@ -5,32 +5,26 @@ import java.util.List;
 
 import javax.annotation.Resource;
 import javax.ejb.EJB;
-import javax.ejb.Local;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
 import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import de.dhbw_mannheim.sand.model.Post;
 import de.dhbw_mannheim.sand.repository.PostRepository;
 
-@Stateless
-@LocalBean
-@Local(PostService.class)
 public class PostServiceImpl implements PostService {
 	
 	private Logger logger = Logger.getLogger(PostServiceImpl.class);
-
-	@Resource(name= "sand")
-	private DataSource ds;
+	
+	@Autowired
+	private PostRepository postRepository;
 	
 	public PostServiceImpl() {
 		
 	}
-	@Autowired
-	private PostRepository postRepository;
 	
 	@Override
 	public Post getPostById(int id) {
@@ -41,20 +35,19 @@ public class PostServiceImpl implements PostService {
 	@Override
 	public List<Post> getAllPostsByThreadId(int id, boolean lazy) {
 		List<Post> allPostsByThreadId = new ArrayList<>();
-		
 		return allPostsByThreadId;
 	}
 	
 	@Override
+	@Transactional(propagation=Propagation.REQUIRED)
 	public int addPost(Post post) {
-		// TODO Auto-generated method stub
-		return 0;
+		postRepository.save((Post)post);
+		return post.getId();
 	}
 	
 	@Override
 	public void editPost(Post post) {
-		// TODO Auto-generated method stub
-		
+		postRepository.save((Post)post);		
 	}
 	
 	@Override
