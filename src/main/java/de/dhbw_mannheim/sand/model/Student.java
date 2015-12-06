@@ -21,7 +21,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 @Entity
-@DiscriminatorValue(value="0")
 @Table(name="student")
 @JsonAutoDetect
 @JsonInclude(value=Include.NON_NULL)
@@ -63,13 +62,13 @@ public class Student extends Role {
 	public Student(@JsonProperty("id") Integer id, @JsonProperty("user") User user,
 			@JsonProperty("startDate") Date startDate,
 			@JsonProperty("endDate") Date endDate, @JsonProperty("enrollmentNumber") String enrollmentNumber
-//			, @JsonProperty("course" ) Course course
+			, @JsonProperty("course" ) Course course
 			)
 			{
 		super(id, user, startDate, endDate);
 
 		this.enrollmentNumber = enrollmentNumber;
-//		this.course = course;
+		this.course = course;
 		setIsLoaded(true);
 	}
 

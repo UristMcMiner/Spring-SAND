@@ -1,5 +1,6 @@
 package de.dhbw_mannheim.sand.service;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -29,7 +30,7 @@ public class TeacherServiceImpl extends RoleServiceImpl implements
 	public List<Role> getRolesByUserId(int userId) {
 		User user = userRepository.findOne(userId);
 		if (user == null) {
-			return null;
+			return new ArrayList<Role>();
 		}
 		return repository.findByUser(user);
 	}
