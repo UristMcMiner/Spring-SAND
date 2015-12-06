@@ -3,16 +3,32 @@ package de.dhbw_mannheim.sand.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Resource;
+import javax.ejb.EJB;
+import javax.ejb.Local;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.sql.DataSource;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import de.dhbw_mannheim.sand.model.Post;
 import de.dhbw_mannheim.sand.repository.PostRepository;
 
+@Stateless
+@LocalBean
+@Local(PostService.class)
 public class PostServiceImpl implements PostService {
 	
 	private Logger logger = Logger.getLogger(PostServiceImpl.class);
 
+	@Resource(name= "sand")
+	private DataSource ds;
+	
+	public PostServiceImpl() {
+		
+	}
 	@Autowired
 	private PostRepository postRepository;
 	
