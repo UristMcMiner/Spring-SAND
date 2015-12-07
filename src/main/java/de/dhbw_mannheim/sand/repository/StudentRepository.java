@@ -13,5 +13,4 @@ public interface StudentRepository extends JpaRepository<Student,Integer> {
 	
 	@Query("select r from Student r where r.user = ?1")
 	List<Role> findByUser(User user);
-	
 }
