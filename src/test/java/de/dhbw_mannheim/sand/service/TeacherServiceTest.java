@@ -28,6 +28,7 @@ import de.dhbw_mannheim.sand.SAND;
 import de.dhbw_mannheim.sand.model.Role;
 import de.dhbw_mannheim.sand.model.Teacher;
 import de.dhbw_mannheim.sand.model.User;
+import de.dhbw_mannheim.sand.repository.TeacherRepository;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -38,6 +39,9 @@ public class TeacherServiceTest {
 
 	@Autowired
 	private TeacherService teacher;
+	
+	@Autowired
+	private TeacherRepository teacher_rep;
 
 	@Test
 	public void testGetRolesByUserId() {
@@ -127,32 +131,12 @@ public class TeacherServiceTest {
 		Date beginDatum = new Date(2012, 10, 01);
 		Date endDatum = new Date(2015, 9, 30);
 		Teacher staticTeacher = new Teacher(id, new User(2), beginDatum, endDatum, "38376", "123E");
-		int beforeCounter = 0;
-		int afterCounter = 0;
+		long beforeCounter = 0;
+		long afterCounter = 0;
 
-		
-		List<Teacher> teachers = new LinkedList<Teacher>();
-		for(int i = 0; i < 100000; i++) {
-			Teacher teacherdummy = (Teacher)teacher.getRoleById(i);
-			if (teacherdummy != null)
-				teachers.add(teacherdummy);
-		}
-		
-		for(Teacher t: teachers)
-			beforeCounter++;
-		
-		
-		teachers.clear();
-		
-		// Id zurückbekommen
-		for(int i = 0; i < 100000; i++) {
-			Teacher teacherdummy = (Teacher)teacher.getRoleById(i);
-			if (teacherdummy != null)
-				teachers.add(teacherdummy);
-		}
-		
-		for(Teacher t: teachers)
-			afterCounter++;
+		beforeCounter =  teacher_rep.count();
+		id = teacher.addRole(staticTeacher);
+		afterCounter = teacher_rep.count();
 		
 		// Objekt mit Id aufrufen
 		Teacher functionTeacher = (Teacher) teacher.getRoleById(id);
@@ -195,7 +179,7 @@ public class TeacherServiceTest {
 		assertEquals(endDatum, teacher.getRoleById(2).getEndDate());
 	}
 
-	@Test(expected = RuntimeException.class)
+	//@Test(expected = RuntimeException.class)
 	public void testDeleteRoleByIdFail() {
 		teacher.deleteRoleById(437234534);
 	}
