@@ -9,14 +9,12 @@ import de.dhbw_mannheim.sand.model.Post;
 
 public interface PostRepository extends JpaRepository<Post,Integer> {
 
-	Post findByIdAndDeleted(int id, int deleted);
-	
-	@Query("select p from Post p where p.thread_id = ?")
+		
+	@Query("select p from Post p where p.thread.id = ?")
 	List<Post> findByThreadId(int threadId);
 	
-	@Query("SELECT rp.id FROM sand.research_project AS rp "
-			+ "INNER JOIN thread on thread.research_project_id = rp.id "
-			+ "INNER JOIN post ON post.thread_id = thread.id"
-			+ " WHERE post.id = ? AND post.hidden = 0 AND thread.hidden = 0;")
+	@Query("SELECT rp.id FROM ResearchProject rp"
+			+ " INNER JOIN rp.threads t INNER JOIN t.posts p"
+			+ " WHERE p.id = ? AND p.hidden = 0 AND t.hidden = 0")
 	int findByPostId(int postId);
 }
