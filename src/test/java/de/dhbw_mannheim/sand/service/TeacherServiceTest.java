@@ -179,7 +179,7 @@ public class TeacherServiceTest {
 		assertEquals(endDatum, teacher.getRoleById(2).getEndDate());
 	}
 
-	//@Test(expected = RuntimeException.class)
+	@Test(expected = RuntimeException.class)
 	public void testDeleteRoleByIdFail() {
 		teacher.deleteRoleById(437234534);
 	}
