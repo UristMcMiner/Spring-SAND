@@ -63,6 +63,8 @@ public class TeacherServiceImpl extends RoleServiceImpl implements
 			Date yesterday = new java.sql.Date(cal.getTimeInMillis());
 			((Role) role).setEndDate(yesterday);
 		}
+		else
+			throw new RuntimeException("Teacher does not exist");
 	}
 
 

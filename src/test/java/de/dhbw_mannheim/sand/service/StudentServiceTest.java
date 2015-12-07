@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -16,17 +17,31 @@ import javax.sql.DataSource;
 
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 
+import de.dhbw_mannheim.sand.SAND;
 import de.dhbw_mannheim.sand.model.Course;
 import de.dhbw_mannheim.sand.model.Role;
 import de.dhbw_mannheim.sand.model.Student;
 import de.dhbw_mannheim.sand.model.User;
+import de.dhbw_mannheim.sand.repository.StudentRepository;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringApplicationConfiguration(classes=SAND.class)
+@Transactional()
+@Rollback(value=true)
 public class StudentServiceTest {
 
 	@Autowired
 	private StudentService student;
+	
+	@Autowired
+	private StudentRepository student_rep;
 
 	@Test
 	public void testGetRolesByUserId() {
@@ -107,48 +122,34 @@ public class StudentServiceTest {
 		assertEquals(staticStudent, functionStudent);
 	}
 
-//	@Test
-//	public void testAddRoleSuccess() {
-//
-//		//Test 1
-//		int id = 99999;
-//		Date beginDatum = new Date(2012, 10, 01);
-//		Date endDatum = new Date(2015, 9, 30);
-//		Student staticStudent = new Student(id, new User(2), beginDatum, endDatum, "" + 1743484, new Course(1));
-//		String query = "SELECT * FROM student";
-//		int beforeCounter = 0;
-//		int afterCounter = 0;
-//
-//		try (Connection con = ds.getConnection(); PreparedStatement ps = con.prepareStatement(query)) {
-//			try (ResultSet rs = ps.executeQuery()) {
-//				while (rs.next()) {
-//					beforeCounter++;
-//				}
-//			}
-//		} catch (SQLException sqle) {
-//			throw new RuntimeException(sqle);
-//		}
-//		//Id zurückbekommen
-//		id = student.addRole(staticStudent);
-//		try (Connection con = ds.getConnection(); PreparedStatement ps = con.prepareStatement(query)) {
-//			try (ResultSet rs = ps.executeQuery()) {
-//				while (rs.next()) {
-//					afterCounter++;
-//				}
-//			}
-//		} catch (SQLException sqle) {
-//			throw new RuntimeException(sqle);
-//		}
-//		Student functionStudent = null;
-//		//Objekt mit Id aufrufen
-//		functionStudent = (Student) student.getRoleById(id);
-//		assertEquals(afterCounter, beforeCounter + 1);
-//		assertEquals(staticStudent.getCourse(), functionStudent.getCourse());
-//		assertEquals(staticStudent.getEnrollmentNumber(), functionStudent.getEnrollmentNumber());
-//		assertEquals(staticStudent.getUser(), functionStudent.getUser());
-//		assertEquals(staticStudent.getEndDate(), functionStudent.getEndDate());
-//		assertEquals(staticStudent.getStartDate(), functionStudent.getStartDate());
-//	}
+	@Test
+	public void testAddRoleSuccess() {
+
+		//Test 1
+		int id = 99999;
+		Date beginDatum = new Date(2012, 10, 01);
+		Date endDatum = new Date(2015, 9, 30);
+		Student staticStudent = new Student(id, new User(2), beginDatum, endDatum, "" + 1743484, new Course(1));
+		String query = "SELECT * FROM student";
+		long beforeCounter = 0;
+		long afterCounter = 0;
+
+		beforeCounter = student_rep.count();
+		//Id zurückbekommen
+		id = student.addRole(staticStudent);
+
+		afterCounter = student_rep.count();
+		
+		Student functionStudent = null;
+		//Objekt mit Id aufrufen
+		functionStudent = (Student) student.getRoleById(id);
+		assertEquals(afterCounter, beforeCounter + 1);
+		assertEquals(staticStudent.getCourse(), functionStudent.getCourse());
+		assertEquals(staticStudent.getEnrollmentNumber(), functionStudent.getEnrollmentNumber());
+		assertEquals(staticStudent.getUser(), functionStudent.getUser());
+		assertEquals(staticStudent.getEndDate(), functionStudent.getEndDate());
+		assertEquals(staticStudent.getStartDate(), functionStudent.getStartDate());
+	}
 
 	@Test
 	public void testEditRoleSuccess() {
@@ -174,11 +175,12 @@ public class StudentServiceTest {
 	}
 
 	@Test
-	@Ignore
 	public void testDeleteRoleByIDSuccess() {
 		student.deleteRoleById(2);
-		Date endDatum = new Date(2015, 05, 25);
-		assertEquals(endDatum, student.getRoleById(2).getEndDate());
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DATE, -1);
+		Date yesterday = new java.sql.Date(cal.getTimeInMillis());
+		assertEquals(yesterday, student.getRoleById(2).getEndDate());
 	}
 
 	@Test(expected = RuntimeException.class)
