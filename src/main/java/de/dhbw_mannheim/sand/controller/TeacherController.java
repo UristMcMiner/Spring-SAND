@@ -1,8 +1,5 @@
 package de.dhbw_mannheim.sand.controller;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,14 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import de.dhbw_mannheim.sand.model.ResearchProject;
-import de.dhbw_mannheim.sand.model.Role;
 import de.dhbw_mannheim.sand.model.Teacher;
-import de.dhbw_mannheim.sand.model.User;
 import de.dhbw_mannheim.sand.repository.TeacherRepository;
-import de.dhbw_mannheim.sand.repository.UserRepository;
 import de.dhbw_mannheim.sand.service.TeacherService;
-import de.dhbw_mannheim.sand.service.UserService;
 
 @CrossOrigin
 @RestController
