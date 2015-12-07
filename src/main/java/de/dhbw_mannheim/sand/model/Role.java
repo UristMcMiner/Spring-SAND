@@ -35,7 +35,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonSubTypes({ @JsonSubTypes.Type(value = Secretary.class), @JsonSubTypes.Type(value = Student.class),
 		@JsonSubTypes.Type(value = Supervisor.class), @JsonSubTypes.Type(value = Teacher.class),
 		@JsonSubTypes.Type(value = Admin.class) })
-public abstract class Role extends LazyObject {
+public class Role extends LazyObject {
 
 	@ManyToOne(fetch=FetchType.EAGER)
 	@JoinColumn(name="user_id")
@@ -103,7 +103,7 @@ public abstract class Role extends LazyObject {
 	
 	@Override
 	@GeneratedValue
-	public int getId(){
+	public Integer getId(){
 		return super.getId();
 	}
 

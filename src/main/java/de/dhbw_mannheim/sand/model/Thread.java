@@ -11,33 +11,27 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
-@JsonAutoDetect
-@JsonInclude(value=Include.NON_NULL)
-@JsonTypeName("thread")
-/*
- * The fronted uses this id internally but filtering it out on the client side is rather tricky so we simply exclude it
- * here
- */
 @Entity
 @Table(name="thread")
-@JsonIgnoreProperties({ "hidden" })
+@JsonAutoDetect
+@JsonInclude(value = Include.NON_NULL)
 public class Thread extends LazyObject {
 
-	@Basic(fetch=FetchType.LAZY)
 	private String title;
 
 	@OneToMany(fetch=FetchType.LAZY, mappedBy="thread")
 	private List<Post> posts;
 
-
 	private int hidden;
 	
-	@ManyToOne(fetch=FetchType.LAZY)
+	@ManyToOne 
 	@JoinColumn(name="research_project_id")
 	private ResearchProject researchProject;
 

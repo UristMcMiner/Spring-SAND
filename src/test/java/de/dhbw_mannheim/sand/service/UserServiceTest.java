@@ -2,6 +2,8 @@ package de.dhbw_mannheim.sand.service;
 
 import static org.junit.Assert.assertTrue;
 
+import java.io.Console;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.After;
@@ -17,6 +19,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import de.dhbw_mannheim.sand.SAND;
+import de.dhbw_mannheim.sand.model.ResearchProject;
+import de.dhbw_mannheim.sand.model.Role;
 import de.dhbw_mannheim.sand.model.User;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -66,7 +70,13 @@ public class UserServiceTest {
 
 	@Test
 	public void testGetUserByEmail() {
-//		fail("Not yet implemented");
+		User expectedUser = userService.getUserById(1);
+		User user = userService.getUserByEmail("Rainer.Colgen@dhbw-mannheim.de");
+		assertTrue(user.getFirstname() == expectedUser.getFirstname());
+		assertTrue(user.getLastname() == expectedUser.getLastname());
+		assertTrue(user.getEmail() == expectedUser.getEmail());
+		assertTrue(user.getId() == expectedUser.getId());
+		
 	}
 
 	@Test
@@ -121,6 +131,51 @@ public class UserServiceTest {
 		userService.changePassword(user);
 		user = userService.getUserById(1);
 		assertTrue(userService.checkPassword("New Password", user));
+	}
+	@Test
+	public void testGetRolesByUser(){
+		List<Role> roles  = new ArrayList<Role>();
+		List<Role> expectedRoles = new ArrayList<Role>();
+		
+		User user = userService.getUserById(1);
+
+		for(Role role : userService.getRolesByUser(1, true)){
+			roles.add(role);
+			System.out.println("Roles: " + role.getId());
+		}
+		
+		for(Role role : user.getRoles()){
+			expectedRoles.add(role);
+
+			System.out.println("ExpectedRoles: " + role.getId());
+		}
+		
+		for(int i=0; i<roles.size(); i++) {
+			assertTrue(roles.get(i).getId() == expectedRoles.get(i).getId());
+
+		}
+	}
+	
+	@Test
+	public void testGetProjectsByUser(){
+		 List<ResearchProject> projects  = new ArrayList<ResearchProject>();
+		 List<ResearchProject> expectedProjects  = new ArrayList<ResearchProject>();
+		 User user = userService.getUserById(1);
+		 for(ResearchProject project: userService.getProjectsByUser(1, true)){
+			projects.add(project);
+			System.out.println("Projects: " + "ID: " +project.getId() + " Title: " + project.getTitle() );
+		}
+		 
+		 for(ResearchProject project : user.getResearchProjects()){
+			 expectedProjects.add(project);
+			 System.out.println("Projects: " + "ID: " +project.getId() + " Title: " + project.getTitle() );
+		 }
+		 for(int i= 0; i<projects.size();i++){
+			 assertTrue(projects.get(i).getTitle() == expectedProjects.get(i).getTitle());
+			 assertTrue(projects.get(i).getId() == expectedProjects.get(i).getId());
+		 }
+
+		
 	}
 
 }

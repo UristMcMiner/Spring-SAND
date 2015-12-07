@@ -24,6 +24,7 @@ import de.dhbw_mannheim.sand.model.User;
 import de.dhbw_mannheim.sand.repository.ResearchProjectOfferRepository;
 import de.dhbw_mannheim.sand.repository.StudentRepository;
 import de.dhbw_mannheim.sand.repository.UserRepository;
+import de.dhbw_mannheim.sand.repository.TeacherRepository;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -34,7 +35,10 @@ public class UserServiceImpl implements UserService {
 	private UserRepository repository;
 	
 	@Autowired
-	private StudentRepository roleRepository;
+	private StudentRepository studentRepository;
+	
+	@Autowired
+	private TeacherRepository teacherRepository;
 	
 	@Autowired
 	private ResearchProjectOfferRepository researchProjectRepository;
@@ -97,6 +101,10 @@ public class UserServiceImpl implements UserService {
 	public void editUser(User user) {
 		User userInDB = repository.findOne(user.getId());
 		if (checkPassword(user.getPassword(), userInDB)) {
+            user.setHashedPassword(userInDB.getHashedPassword());
+            user.setIterations(userInDB.getIterations());
+            user.setSalt(userInDB.getSalt());
+            user.setDeleted(0);
 			repository.saveAndFlush(user);
 		} else {
 			throw new RuntimeException();
@@ -123,12 +131,48 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	@Transactional(propagation=Propagation.REQUIRED)
 	public void changePassword(User user) {
 		User userInDB = repository.findOne(user.getId());
 		if (!checkPassword(userInDB.getPassword(), user)) {
 			userInDB.setHashedPassword(hashPassword(user.getPassword(), user.getIterations(), user.getSalt()));
 			repository.flush();
 		}
+	}
+
+	@Override
+	public List<Role> getRolesByUser(int id, boolean lazy) {
+
+		List<Role> roles = new ArrayList<Role>();
+//		List<Role> roleTeacher= new ArrayList<Role>();
+//		List<Role> roleStudent =  new ArrayList<Role>();
+		User user = repository.findOne(id);
+		List<Role> roleTeacher = teacherRepository.findByUser(user);
+		for(Role role: roleTeacher){
+			roles.add(role);
+		}
+		List<Role> roleStudent = studentRepository.findByUser(user);
+		for(Role role: roleStudent){
+			roles.add(role);
+		}
+		return roles;
+	}
+
+	@Override
+	public List<ResearchProject> getProjectsByUser(int id, boolean lazy) {
+		List<ResearchProject> resultList = new ArrayList<ResearchProject>();
+		List<ResearchProjectOffer> projectsByCreator = new ArrayList<ResearchProjectOffer>();
+		List<ResearchProjectOffer> projectsByUser = new ArrayList<ResearchProjectOffer>();
+		User user = repository.findById(id);
+		projectsByCreator = researchProjectRepository.findByCreator(user);
+		for(ResearchProjectOffer project : projectsByCreator){
+			resultList.add(project);
+		}
+		projectsByUser = researchProjectRepository.findByInterestedUser(user);
+		for(ResearchProjectOffer project : projectsByUser){
+			resultList.add(project);
+		}
+		return resultList;
 	}
 
     private byte[] hashPassword(String password, int iterations, byte[] salt) {
@@ -160,11 +204,7 @@ public class UserServiceImpl implements UserService {
     
     private User modifyUser(User user) {
 		if ((user != null) && (user.getDeleted()==0)) {
-			List<Role> roles = roleRepository.findByUser(user); 
-			for (Role role: roles) {
-				role.setUser(new User(user.getId()));
-			}
-			user.setRoles(roles);
+			user.setRoles(getRolesByUser(user.getId(), false));
 
 			List<ResearchProjectOffer> projectsByCreator = researchProjectRepository.findByCreator(user);
 			for (ResearchProject project: projectsByCreator) {
@@ -189,4 +229,5 @@ public class UserServiceImpl implements UserService {
 		}
     	
     }
+
 }
