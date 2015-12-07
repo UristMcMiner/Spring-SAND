@@ -17,7 +17,6 @@ public class ResearchProjectOfferControllerAuthorizationChecker implements Autho
 	
 	@Override
 	public boolean checkGetById(User user, int id) {
-		// TODO Auto-generated method stub
 		return true;
 	}
 
@@ -35,29 +34,23 @@ public class ResearchProjectOfferControllerAuthorizationChecker implements Autho
 		ResearchProjectOffer existing = repository.getOne(pendingChange.getId());
 		List<User> listBefore = existing.getUsers();
 		List<User> listAfter  = pendingChange.getUsers();
-		Iterator<User> it_a = listAfter.iterator();
-		Iterator<User> it_b = listBefore.iterator();
 		
 		//If User is Creator, allow change
 		if(existing.getCreator().equals(user)) return true;
 		
 		//Only Users who are Students or Teacher may add themselves as interested
-		while(it_a.hasNext()){
-			User u = it_a.next();
+		for(User u : listAfter){
 			if(!listBefore.contains(u)){
 				if(u.isTeacher() || u.isStudent()) return true;
 			}
 		}
 		
 		//Only Users who are Students or Teacher may remove themselves from interested
-		while(it_b.hasNext()){
-			User u = it_b.next();
+		for(User u : listBefore){
 			if(!listAfter.contains(u)){
 				if(u.isTeacher() || u.isStudent()) return true;
 			}
-		}
-		
-		
+		}	
 		return false;
 	}
 

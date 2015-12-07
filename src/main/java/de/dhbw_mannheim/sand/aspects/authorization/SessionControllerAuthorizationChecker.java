@@ -13,6 +13,8 @@ public class SessionControllerAuthorizationChecker implements AuthorizationCheck
 	 */
 	@Override
 	public boolean checkGetById(User user, int id) {
+		
+		
 		return true;
 	}
 
