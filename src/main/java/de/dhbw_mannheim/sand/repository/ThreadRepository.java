@@ -13,10 +13,7 @@ import de.dhbw_mannheim.sand.model.User;
 
 public interface ThreadRepository extends JpaRepository<Thread,Integer> {
 	
-	//@Query("select t from Thread t where id = ?1")
-	Thread findByID (int id);
-	
-	@Query("select t from Thread t where research_project_id = ?1")
+	@Query("select t from Thread t where t.researchProject.id = ?1")
 	List<Thread> findByResearchProject(int rp);
 	
 	

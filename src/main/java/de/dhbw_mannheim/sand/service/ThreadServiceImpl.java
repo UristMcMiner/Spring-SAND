@@ -1,17 +1,9 @@
 package de.dhbw_mannheim.sand.service;
 
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.JpaRepository;
 
-import de.dhbw_mannheim.sand.model.Role;
 import de.dhbw_mannheim.sand.model.Thread;
 import de.dhbw_mannheim.sand.repository.ThreadRepository;
 
@@ -29,7 +21,7 @@ public class ThreadServiceImpl implements ThreadService {
 
 	@Override
 	public Thread getThreadById(int id) {
-		thread_rep.findByID(id);
+		thread_rep.findOne(id);
 		return null;
 	}
 
@@ -47,7 +39,7 @@ public class ThreadServiceImpl implements ThreadService {
 
 	@Override
 	public void deleteThreadById(int id) {
-		Thread t = thread_rep.findByID(id);
+		Thread t = thread_rep.findOne(id);
 //		if (t != null) {
 //			Calendar cal = Calendar.getInstance();
 //			cal.add(Calendar.DATE, -1);
