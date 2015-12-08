@@ -37,6 +37,7 @@ import de.dhbw_mannheim.sand.repository.TeacherRepository;
 import de.dhbw_mannheim.sand.repository.ThreadRepository;
 import de.dhbw_mannheim.sand.repository.UserRepository;
 
+//so Datei ändern um neu zu pushen....
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes=SAND.class)
