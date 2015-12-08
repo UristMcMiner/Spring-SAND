@@ -1,7 +1,6 @@
 package de.dhbw_mannheim.sand.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -66,14 +65,22 @@ public class PostServiceTest {
 		assertEquals(postService.getPostById(newPostId).getText(), post.getText());
 		assertTrue(postService.getPostById(newPostId).getThread().getId() == post.getThread().getId());
 		assertEquals(postService.getPostById(newPostId).getTimestamp(), post.getTimestamp());
+
+		System.out.println("done AddPost");
 	}
-	//@Test
+	@Test
 	public void testdeletePostById(){
-		
+		Post postBefore = postService.getPostById(1);
+		assertNotNull(postBefore);
 		postService.deletePostById(1);
+		Post postAfter = postService.getPostById(1);
+
+		System.out.println("done deletePostById");
+		assertNull(postAfter);
+
 	}
 
-	//@Test
+	@Test
 	public void testEditPost(){
 		
 	}
@@ -84,6 +91,8 @@ public class PostServiceTest {
 		for(Post post : postService.getAllPostsByThreadId(1, true)){
 			posts.add(post);
 		}
+
+		System.out.println("done getAllPostsByThreadID");
 		assertTrue(posts.size() == 3);
 		
 		assertTrue(posts.get(0).getId() == 1);
@@ -95,19 +104,36 @@ public class PostServiceTest {
 		assertTrue(posts.get(2).getId() == 67);
 		assertTrue(posts.get(2).getCreator().getId() == 13);
 			
-		
 	}
 	
 	@Test
 	public void testGetPostById(){
 		Post post = postService.getPostById(1);
-		System.out.println(post.getId());
+
+		System.out.println("done getPostById");
 		assertTrue(post.getId()==1);
+
 	}
-	
-	//@Test
+	@Test
 	public void testGetResearchProjectByPostId(){
-		
+		int id = 0;
+
+		// Test 1: ReseachProject mit der Id=10 hat Post mit Id = 3
+		id = postService.getResearchProjectByPostId(4);
+		System.out.println(id);
+		assertTrue(13 == id);
+
+		// Test 2: ResearchProject mit der Id=23 hat Post mit Id=
+		id = postService.getResearchProjectByPostId(11);
+		System.out.println(id);
+		assertTrue(20 == id);
+
+		// Test 3: Post hat kein dazugehöriges RP
+		id = postService.getResearchProjectByPostId(6);
+		System.out.println(id);
+
+		System.out.println("done getresearchprojectbypostid");
+		assertEquals(null, id);
 	}
 
 }
