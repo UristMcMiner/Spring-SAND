@@ -12,10 +12,11 @@ import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @Entity
 @Table(name="thread")
@@ -28,10 +29,9 @@ public class Thread extends LazyObject {
 	@OneToMany(fetch=FetchType.LAZY, mappedBy="thread")
 	private List<Post> posts;
 
-	@JsonIgnore
 	private int hidden;
 	
-	@ManyToOne
+	@ManyToOne 
 	@JoinColumn(name="research_project_id")
 	private ResearchProject researchProject;
 

@@ -1,5 +1,6 @@
 package de.dhbw_mannheim.sand.service;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -29,7 +30,7 @@ public class StudentServiceImpl extends RoleServiceImpl implements
 	public List<Role> getRolesByUserId(int userId) {
 		User user = userRepository.findOne(userId);
 		if (user == null) {
-			return null;
+			return new ArrayList<Role>();
 		}
 		return repository.findByUser(user);
 	}
@@ -49,7 +50,10 @@ public class StudentServiceImpl extends RoleServiceImpl implements
 	@Override
 	@Transactional(propagation=Propagation.REQUIRED)
 	public void editRole(Role role) {
+		if(repository.findOne(role.getId()) != null)
 		repository.save((Student)role);
+		else
+			throw new RuntimeException("Student does not exist");
 	}
 
 	@Override
@@ -62,6 +66,8 @@ public class StudentServiceImpl extends RoleServiceImpl implements
 			Date yesterday = new java.sql.Date(cal.getTimeInMillis());
 			((Role) role).setEndDate(yesterday);
 		}
+		else
+			throw new RuntimeException("Student does not exist");
 	}
 
 

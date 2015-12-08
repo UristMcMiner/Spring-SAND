@@ -144,14 +144,14 @@ public class UserServiceImpl implements UserService {
 	public List<Role> getRolesByUser(int id, boolean lazy) {
 
 		List<Role> roles = new ArrayList<Role>();
-		List<Role> roleTeacher= new ArrayList<Role>();
-		List<Role> roleStudent =  new ArrayList<Role>();
+//		List<Role> roleTeacher= new ArrayList<Role>();
+//		List<Role> roleStudent =  new ArrayList<Role>();
 		User user = repository.findOne(id);
-		roleTeacher = teacherRepository.findByUser(user);
+		List<Role> roleTeacher = teacherRepository.findByUser(user);
 		for(Role role: roleTeacher){
 			roles.add(role);
 		}
-		roleStudent = studentRepository.findByUser(user);
+		List<Role> roleStudent = studentRepository.findByUser(user);
 		for(Role role: roleStudent){
 			roles.add(role);
 		}

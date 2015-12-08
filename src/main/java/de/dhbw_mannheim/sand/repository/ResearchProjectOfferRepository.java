@@ -14,5 +14,11 @@ public interface ResearchProjectOfferRepository extends JpaRepository<ResearchPr
 	
 	@Query("select o from ResearchProjectOffer o inner join o.users u where u = ?1 and o.deleted=0")
 	List<ResearchProjectOffer> findByInterestedUser(User user);
+	
+	ResearchProjectOffer findByIdAndDeleted(int id, int deleted);
+	
+	ResearchProjectOffer findByUuidAndDeleted(String uuid, int deleted);
+	
+	List<ResearchProjectOffer> findByDeleted(int deleted);
 
 }

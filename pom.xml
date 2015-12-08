@@ -89,7 +89,7 @@
                <argLine>${surefireArgLine}</argLine>
                <workingDirectory>${project.basedir}/target</workingDirectory>
                <includes>
-                  <include>**/controller/*</include>
+                  <!--include>**/controller/*</include-->
                   <include>**/repository/*</include>
                   <include>**/service/*</include>
                </includes>
