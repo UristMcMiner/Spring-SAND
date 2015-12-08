@@ -87,7 +87,7 @@ public class ResearchProjectOfferController {
                         @RequestHeader(value="authorization", defaultValue="X") String authorization, 
 			@PathVariable(value = "uuid") int uuid) {
 		try {
-			ResearchProjectOffer offer = service.getProjectByUuid(uuid);
+			ResearchProjectOffer offer = service.getProjectByUuid(uuid+"");
                         return new ResponseEntity<>(offer, HttpStatus.OK);
       		} catch (Exception e) {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
