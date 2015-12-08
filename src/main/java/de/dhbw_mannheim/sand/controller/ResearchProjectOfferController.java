@@ -14,7 +14,9 @@ import de.dhbw_mannheim.sand.annotations.Prototype;
 import de.dhbw_mannheim.sand.model.ResearchProjectOffer;
 import de.dhbw_mannheim.sand.model.Student;
 import de.dhbw_mannheim.sand.repository.ResearchProjectOfferRepository;
+import de.dhbw_mannheim.sand.service.ResearchProjectOfferService;
 import de.dhbw_mannheim.sand.service.UserService;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -85,7 +87,7 @@ public class ResearchProjectOfferController {
                         @RequestHeader(value="authorization", defaultValue="X") String authorization, 
 			@PathVariable(value = "uuid") int uuid) {
 		try {
-			ResearchProjectOffer offer = service.getProjectByUuid(uuid);
+			ResearchProjectOffer offer = service.getProjectByUuid(uuid+"");
                         return new ResponseEntity<>(offer, HttpStatus.OK);
       		} catch (Exception e) {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
