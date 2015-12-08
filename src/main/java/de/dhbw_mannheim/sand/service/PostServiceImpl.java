@@ -64,7 +64,7 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
-	public int getResearchProjectByPostId(int id) {
+	public Integer getResearchProjectByPostId(int id) {
 		return postRepository.findByPostId(id);
 	}
 
