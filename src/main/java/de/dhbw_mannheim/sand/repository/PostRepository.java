@@ -16,5 +16,5 @@ public interface PostRepository extends JpaRepository<Post,Integer> {
 	@Query("SELECT rp.id FROM ResearchProject rp"
 			+ " INNER JOIN rp.threads t INNER JOIN t.posts p"
 			+ " WHERE p.id = ? AND p.hidden = 0 AND t.hidden = 0")
-	int findByPostId(int postId);
+	Integer findByPostId(int postId);
 }
