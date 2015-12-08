@@ -57,6 +57,10 @@ public class Thread extends LazyObject {
 	public String getTitle() {
 		return this.title;
 	}
+	
+	public void delete() {
+		hidden = 1;
+	}
 
 	public void setTitle(String title) {
 		this.title = title;

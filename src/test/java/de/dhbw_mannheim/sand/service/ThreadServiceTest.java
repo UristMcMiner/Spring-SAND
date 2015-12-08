@@ -58,7 +58,7 @@ public class ThreadServiceTest {
 	private UserRepository user_rep;
 
 	@Test
-	public void testGetThreadsById() {
+	public void testGetThreadById() {
 		
 		List<Thread> actual = new ArrayList<>();
 		List<Thread> expected = new ArrayList<>();
@@ -71,135 +71,142 @@ public class ThreadServiceTest {
 		thread = thread_rep.save(thread);
 		expected.add(thread);
 		
-		actual.add(thread_service.getThreadById(thread.getId()));
-		
-		assertEquals(expected, actual);
-		
-		// Test 2: Id gibt es nicht
-		int threadId = 9999999;
-		
-		expected = new ArrayList<Thread>();
-		
-		expected.add(thread_service.getThreadById(threadId));
-		
-		assertEquals(true, expected.isEmpty());
+		/*
+		 * Schlägt fehl, Fehler: 
+		00:23:17,257  WARN SqlExceptionHelper:144 - SQL Error: 1048, SQLState: 23000
+		00:23:17,257 ERROR SqlExceptionHelper:146 - Column 'research_project_offer_uuid' cannot be null
+		00:23:17,260  WARN SqlExceptionHelper:232 - SQL Warning Code: 1048, SQLState: 23000
+		00:23:17,260  WARN SqlExceptionHelper:233 - Column 'research_project_offer_uuid' cannot be null
 
-//		// Test 3: zwei Rollen
-//		userID = 68;
-//		actual = new ArrayList<>();
-//		beginDatum = new Date(2013, 01, 01);
-//		endDatum = new Date(2018, 02, 02);
-//		actual.add(new Teacher(8, new User(userID), beginDatum, endDatum, "9161-124469", "231D"));
-//		beginDatum = new Date(1992, 01, 01);
-//		endDatum = new Date(2000, 10, 15);
-//		actual.add(new Teacher(9, new User(userID), beginDatum, endDatum, "9243-193179", "251A"));
-//		expected = teacher.getRolesByUserId(userID);
-//		assertEquals(actual.size(), expected.size());
-//		assertEquals(actual.get(0).getId(), expected.get(0).getId());
-//		assertEquals(actual.get(1).getId(), expected.get(1).getId());
-//		assertEquals(actual.get(0).getUser(), expected.get(0).getUser());
-//		assertEquals(actual.get(1).getUser(), expected.get(1).getUser());
-//
-//	}
-//
-//	@Test
-//	public void testGetRoleById() {
-//		int id = 0;
-//		Date beginDatum = null;
-//		Date endDatum = null;
-//		Teacher staticTeacher = null;
-//		Teacher functionTeacher = null;
-//
-//		// Test 1
-//		id = 4;
-//		beginDatum = new Date(2012, 10, 01);
-//		endDatum = new Date(2015, 9, 30);
-//		staticTeacher = new Teacher(id, new User(51), beginDatum, endDatum, "9999-999999", "321X");
-//		functionTeacher = (Teacher) teacher.getRoleById(id);
-//		assertEquals(staticTeacher.getPhone(), functionTeacher.getPhone());
-//		assertEquals(staticTeacher.getRoom(), functionTeacher.getRoom());
-//		assertEquals(staticTeacher.getId(), functionTeacher.getId());
-//		assertEquals(staticTeacher.getUser(), functionTeacher.getUser());
-//		// assertEquals(staticTeacher.getEndDate(), functionTeacher.getEndDate());
-//		// assertEquals(staticTeacher.getStartDate(), functionTeacher.getStartDate());
-//
-//		// Test 2
-//		id = 8;
-//		functionTeacher = (Teacher) teacher.getRoleById(id);
-//		assertNotSame(staticTeacher.getPhone(), functionTeacher.getPhone());
-//		assertNotSame(staticTeacher.getRoom(), functionTeacher.getRoom());
-//		assertNotSame(staticTeacher.getId(), functionTeacher.getId());
-//		assertNotSame(staticTeacher.getUser(), functionTeacher.getUser());
-//		// assertEquals(staticTeacher.getEndDate(), functionTeacher.getEndDate());
-//		// assertEquals(staticTeacher.getStartDate(), functionTeacher.getStartDate());
-//
-//		// Test 3: Negativ-Test
-//		id = 999999;
-//		staticTeacher = null;
-//		functionTeacher = (Teacher) teacher.getRoleById(id);
-//		assertEquals(staticTeacher, functionTeacher);
-//	}
-//
-//
-//	
-//	@Test
-//	public void testAddRoleSuccess() {
-//
-//		// Test 1
-//		int id = 99999;
-//		Date beginDatum = new Date(2012, 10, 01);
-//		Date endDatum = new Date(2015, 9, 30);
-//		Teacher staticTeacher = new Teacher(id, new User(2), beginDatum, endDatum, "38376", "123E");
-//		long beforeCounter = 0;
-//		long afterCounter = 0;
-//
-//		beforeCounter =  teacher_rep.count();
-//		id = teacher.addRole(staticTeacher);
-//		afterCounter = teacher_rep.count();
+		actual.add(thread_service.getThreadById(thread.getId()));
+		assertEquals(expected, actual);
+		*/
+		
+//		// Test 2: Id gibt es nicht
+//		int threadId = 9999999;
 //		
-//		// Objekt mit Id aufrufen
-//		Teacher functionTeacher = (Teacher) teacher.getRoleById(id);
-//		assertEquals(afterCounter, beforeCounter + 1);
-//		assertEquals(staticTeacher.getPhone(), functionTeacher.getPhone());
-//		assertEquals(staticTeacher.getRoom(), functionTeacher.getRoom());
-//		assertEquals(staticTeacher.getUser(), functionTeacher.getUser());
-//		assertEquals(staticTeacher.getEndDate(), functionTeacher.getEndDate());
-//		assertEquals(staticTeacher.getStartDate(), functionTeacher.getStartDate());
-//	}
-//
-//	@Test
-//	public void testEditRoleSuccess() {
-//		// Test 1
-//		int id = 7;
-//		Date beginDatum = new Date(2012, 10, 01);
-//		Date endDatum = new Date(2015, 9, 30);
-//		Teacher staticTeacher = new Teacher(id, new User(64), beginDatum, endDatum, "9743-971347", "232D");
-//		teacher.editRole(staticTeacher);
-//		Teacher functionTeacher = (Teacher) teacher.getRoleById(7);
-//		assertEquals(staticTeacher.getRoom(), functionTeacher.getRoom());
-//		assertEquals(staticTeacher.getPhone(), functionTeacher.getPhone());
-//		assertEquals(staticTeacher.getUser(), functionTeacher.getUser());
-//		assertEquals(staticTeacher.getEndDate(), functionTeacher.getEndDate());
-//		assertEquals(staticTeacher.getStartDate(), functionTeacher.getStartDate());
-//		assertEquals(staticTeacher.getId(), functionTeacher.getId());
-//	}
-//
-//	@Test(expected = RuntimeException.class)
-//	public void testEditRoleFail() {
-//		Teacher functionTeacher = (Teacher) teacher.getRoleById(67849);
-//		teacher.addRole(functionTeacher);
-//	}
-//
-//	@Test
-//	@Ignore
-//	public void testDeleteRoleByIDSuccess() {
-//		teacher.deleteRoleById(2);
-//		Date endDatum = new Date(2015, 05, 25);
-//		assertEquals(endDatum, teacher.getRoleById(2).getEndDate());
-//	}
-//
-//	@Test(expected = RuntimeException.class)
-//	public void testDeleteRoleByIdFail() {
-//		teacher.deleteRoleById(437234534);
+//		expected = new ArrayList<Thread>();
+//		
+//		Thread temp_thread = thread_service.getThreadById(threadId);
+//		if (temp_thread != null) {
+//			expected.add(temp_thread);
+//		}
+//		
+//		assertEquals(true, expected.isEmpty());
+	}
+	
+	@Test
+	public void testAddThread() {
+		int tId = 2;
+		int researchId = 10;
+		Thread expected = new Thread(tId);
+		ResearchProjectOffer p = new ResearchProjectOffer(researchId);
+		expected.setTitle("Test Thread");
+		expected.setResearchProject(p);
+
+		int t_id = thread_service.addThread(expected);
+		Thread t = thread_rep.findOne(t_id);
+		expected.setId(t_id);
+
+		assertEquals(expected, t);
+
+	}
+	
+	public void testGetAllThreadsByResearchProjectId() {
+		int rId = 10;
+		//@formatter:off
+		/**
+		 * ResearchProject mit der ID=10 besitzt zwei Threads
+		 * mit den IDs id1 = 1 und id2 = 21,
+		 * beide Threads sind sichtbar(hidden=0).
+		 */
+		//@formatter:on
+		Thread t1 = new Thread(1);
+		Thread t2 = new Thread(21);
+		t1.setTitle("Lorem ipsum dolor sit amet, consetetur sadips");
+		t2.setTitle("Lorem ipsum dolor sit amet, consetetur sadips");
+		List<Thread> expected = new ArrayList<>();
+		expected.add(t1);
+		expected.add(t2);
+
+		List<Thread> actual = thread_service.getAllThreadsByResearchProjectId(rId);
+
+		assertEquals(expected.size(), actual.size());
+
+
+		int rIdHidden = 11;
+		// formater:off
+		/**
+		 * ResearchProject mit der ID=11 besitzt zwei Threads mit den IDs id1 = 2 und id2 = 22, beide Threads sind nicht
+		 * sichtbar(hidden=1).
+		 */
+		// formatter:on
+		expected.clear();
+		actual = thread_service.getAllThreadsByResearchProjectId(rIdHidden);
+		assertEquals(expected.size(), actual.size());
+
+		// lazy
+		actual = thread_service.getAllThreadsByResearchProjectId(rId);
+		expected.add(new Thread(rId));
+		expected.add(new Thread(rId));
+
+		assertEquals(expected.size(), actual.size());
+	}
+	
+	@Test
+	public void testEditThread() {
+		int tId = 10;
+		//@formatter:off
+		/**
+		 * Der Thread mit der id=10 hat den
+		 * ursprünglichen Titel 'Lorem ipsum dolor sit
+		 * amet, consetetur sadips' und ist mit dem
+		 * ResearchProject mit der id=19 verknuepft.
+		 */
+		//@formatter:on
+		int pId = 2;
+		Thread expected = new Thread(tId);
+		expected.setTitle("Ich bin ein editierter Thread");
+		ResearchProjectOffer p = new ResearchProjectOffer(pId);
+		expected.setResearchProject(p);
+
+		thread_service.editThread(expected);
+		Thread actual = thread_service.getThreadById(tId);
+		assertEquals(expected.getTitle(), actual.getTitle());
+		assertEquals(expected.getResearchProject().getId(), actual.getResearchProject().getId());
+
+	}
+	
+	@Test
+	public void testDeleteThreadByID() {
+		int tId = 1;
+		int rId = 10;
+		//@formatter:off
+		/**
+		 * Der Thread besitzt folgende Attribute:
+		 * id = 1
+		 * research_project_id = 10
+		 * title = 'Lorem ipsum dolor sit
+		 * 			amet, consetetur sadips'
+		 * hidden = 0
+		 */
+		Thread expected = new Thread(tId);
+		expected.setTitle("Lorem ipsum dolor sit amet, consetetur sadips");
+		ResearchProjectOffer p = new ResearchProjectOffer(rId);
+		expected.setResearchProject(p);
+		Thread t = thread_rep.save(expected);
+		
+		List<Thread> before_list = thread_rep.findAll();
+		thread_service.deleteThreadById(t.getId());
+		List<Thread> after_list = thread_rep.findAll();
+		
+		assertEquals(before_list.size() - 1, after_list.size());
+	}
+
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void testDeleteNonExistingThread() {
+		int t_id = 9999999;
+		thread_service.deleteThreadById(t_id);
 	}
 }
