@@ -41,7 +41,7 @@ public class UserControllerAuthorizationChecker implements AuthorizationChecker 
 	}
 
 	@Override
-	public boolean checkOther(User user) {
+	public boolean checkOther(User user, String method, Object param) {
 		// TODO Auto-generated method stub
 		return false;
 	}
