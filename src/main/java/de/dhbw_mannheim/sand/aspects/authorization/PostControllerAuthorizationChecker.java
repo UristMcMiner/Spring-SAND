@@ -43,18 +43,9 @@ public class PostControllerAuthorizationChecker implements AuthorizationChecker 
 	public boolean checkDelete(User user, int id) {
 		Post post  = new Post(id);
 		Thread thread = post.getThread();
-		List<ResearchProjectOffer> rpol = rpo_repository.findAll();
-		for ( ResearchProjectOffer rpo : rpol ){
-			List<Thread> tl = rpo.getThreads();
-			for ( Thread t : tl ){
-				if(t.getId() == id){
-					return ( rpo.getUsers().contains(user) || rpo.getCreator().equals(user));
-				}
-			}
-		}
-			
+		ResearchProject rp = thread.getResearchProject();
+		return rp.getCreator().equals(user);
 		
-		return false;
 	}
 
 	@Override

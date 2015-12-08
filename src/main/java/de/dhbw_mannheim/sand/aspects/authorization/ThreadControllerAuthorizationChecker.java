@@ -3,6 +3,8 @@ package de.dhbw_mannheim.sand.aspects.authorization;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+
+import de.dhbw_mannheim.sand.model.ResearchProject;
 import de.dhbw_mannheim.sand.model.Thread;
 import de.dhbw_mannheim.sand.model.LazyObject;
 import de.dhbw_mannheim.sand.model.ResearchProjectOffer;
@@ -20,15 +22,11 @@ public class ThreadControllerAuthorizationChecker implements AuthorizationChecke
 	
 	@Override
 	public boolean checkGetById(User user, int id) {
-		//Searching all Threads from ResearchProjectOffers, no method for getting a RPO from a Thread
-		List<ResearchProjectOffer> rpol = rpo_repository.findAll();
-		for ( ResearchProjectOffer rpo : rpol ){
-			List<Thread> tl = rpo.getThreads();
-			for ( Thread t : tl ){
-				if(t.getId() == id){
-					return ( rpo.getUsers().contains(user) || rpo.getCreator().equals(user));
-				}
-			}
+		Thread thread = new Thread(id);
+		ResearchProject rp = thread.getResearchProject();
+		if( rp instanceof ResearchProjectOffer){
+			ResearchProjectOffer rpo = (ResearchProjectOffer)rp;
+			return (rpo.getUsers().contains(user) || rpo.getCreator().equals(user));
 		}
 		return false;
 	}

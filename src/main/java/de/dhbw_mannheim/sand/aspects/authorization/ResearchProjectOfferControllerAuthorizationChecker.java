@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import de.dhbw_mannheim.sand.model.LazyObject;
+import de.dhbw_mannheim.sand.model.ResearchProject;
 import de.dhbw_mannheim.sand.model.ResearchProjectOffer;
 import de.dhbw_mannheim.sand.model.User;
 import de.dhbw_mannheim.sand.repository.ResearchProjectOfferRepository;
@@ -17,7 +18,9 @@ public class ResearchProjectOfferControllerAuthorizationChecker implements Autho
 	
 	@Override
 	public boolean checkGetById(User user, int id) {
-		return true;
+		ResearchProject rp = repository.getOne(id);
+		if(rp instanceof ResearchProjectOffer) return true;
+		return false;
 	}
 
 	@Override
@@ -27,30 +30,31 @@ public class ResearchProjectOfferControllerAuthorizationChecker implements Autho
 
 	@Override
 	public boolean checkUpdate(User user, LazyObject object) {
-		//If user is Admin allow action
-		if(user.isAdmin()) return true;
 		
 		ResearchProjectOffer pendingChange = (ResearchProjectOffer)object;
 		ResearchProjectOffer existing = repository.getOne(pendingChange.getId());
 		List<User> listBefore = existing.getUsers();
 		List<User> listAfter  = pendingChange.getUsers();
+	
+		if(user.isStudent() || user.isTeacher()){
+			//If User is Creator, allow change (May add or delete Interested user aswell, is allowed by the task
+			if(existing.getCreator().equals(user)) return true;
 		
-		//If User is Creator, allow change
-		if(existing.getCreator().equals(user)) return true;
-		
-		//Only Users who are Students or Teacher may add themselves as interested
-		for(User u : listAfter){
-			if(!listBefore.contains(u)){
-				if(u.isTeacher() || u.isStudent()) return true;
+
+			//Only Users who are Students or Teacher may add themselves as interested
+			for(User u : listAfter){
+				if(!listBefore.contains(u)){
+					if(u.equals(user) && EqualsExceptUsers(existing,pendingChange)) return true;
+				}
 			}
+		
+			//Only Users who are Students or Teacher may remove themselves from interested
+			for(User u : listBefore){
+				if(!listAfter.contains(u)){
+					if(u.equals(user) && EqualsExceptUsers(existing,pendingChange)) return true;
+				}
+			}	
 		}
-		
-		//Only Users who are Students or Teacher may remove themselves from interested
-		for(User u : listBefore){
-			if(!listAfter.contains(u)){
-				if(u.isTeacher() || u.isStudent()) return true;
-			}
-		}	
 		return false;
 	}
 
@@ -66,5 +70,16 @@ public class ResearchProjectOfferControllerAuthorizationChecker implements Autho
 		return false;
 	}
 	
+	private boolean EqualsExceptUsers(ResearchProjectOffer rpo1, ResearchProjectOffer rpo2){
+		return( rpo1.getCreator().equals(rpo2.getCreator()) &&
+				rpo1.getVisible() == rpo2.getVisible() &&
+				rpo1.getDescription().equals(rpo2.getDescription()) &&
+				rpo1.getDescriptionLong().equals(rpo2.getDescriptionLong()) &&
+				rpo1.getId() == rpo2.getId() &&
+				rpo1.getThreads().equals(rpo2.getThreads()) &&
+				rpo1.getTitle().equals(rpo2.getTitle()) &&
+				rpo1.getUuid() == rpo2.getUuid()
+				);
+	}
 
 }
