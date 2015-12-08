@@ -14,7 +14,9 @@ import de.dhbw_mannheim.sand.annotations.Prototype;
 import de.dhbw_mannheim.sand.model.ResearchProjectOffer;
 import de.dhbw_mannheim.sand.model.Student;
 import de.dhbw_mannheim.sand.repository.ResearchProjectOfferRepository;
+import de.dhbw_mannheim.sand.service.ResearchProjectOfferService;
 import de.dhbw_mannheim.sand.service.UserService;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;

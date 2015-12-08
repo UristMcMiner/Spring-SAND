@@ -6,7 +6,7 @@ import de.dhbw_mannheim.sand.model.*;
 
 public interface ResearchProjectOfferService {
 
-	public ResearchProjectOffer getProjectByUuid(String uuid);
+	public ResearchProjectOffer getProjectByUuid(int uuid);
 	
 	/**
 	 *

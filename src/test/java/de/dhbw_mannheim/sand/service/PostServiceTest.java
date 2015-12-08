@@ -72,6 +72,7 @@ public class PostServiceTest {
 
 		System.out.println("done AddPost");
 	}
+	
 	@Test
 	public void testdeletePostById(){
 		Post postBefore = postService.getPostById(1);

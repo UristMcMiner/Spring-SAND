@@ -2,6 +2,8 @@ package de.dhbw_mannheim.sand.controller;
 
 import de.dhbw_mannheim.sand.model.Post;
 import de.dhbw_mannheim.sand.model.User;
+import de.dhbw_mannheim.sand.service.PostService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @CrossOrigin
