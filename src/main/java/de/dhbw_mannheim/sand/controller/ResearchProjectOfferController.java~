@@ -30,6 +30,9 @@ public class ResearchProjectOfferController {
 	@Autowired
 	private ResearchProjectOfferService service;
 
+<<<<<<< HEAD
+	@Prototype
+=======
 	/**
 	 * REST-Endpoint for getting all ResearchProjectOffers.
 	 *
@@ -37,7 +40,8 @@ public class ResearchProjectOfferController {
 	 * @return All ResearchProjectPapers
 	 *
 	 */
-//	@Prototype
+//	@LoggedIn
+>>>>>>> rest
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
 	public List<ResearchProjectOffer> getResearchProjectOffers(
