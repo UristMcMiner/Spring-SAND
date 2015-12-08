@@ -9,6 +9,7 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -45,7 +46,7 @@ public class ResearchProject extends LazyObject {
 	@Column(name="description_long")
 	private String descriptionLong;
 
-	@Transient
+	@OneToMany(mappedBy="researchProject")
 	private List<Thread> threads;
 
 	@JsonIgnore

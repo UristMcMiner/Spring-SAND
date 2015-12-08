@@ -1,7 +1,6 @@
 package de.dhbw_mannheim.sand.service;
 
 import java.util.List;
-
 import de.dhbw_mannheim.sand.model.Post;
 
 public interface PostService {

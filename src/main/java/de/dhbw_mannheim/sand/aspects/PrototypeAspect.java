@@ -72,7 +72,7 @@ public class PrototypeAspect {
 	}
 
 	@Pointcut("execution(@de.dhbw_mannheim.sand.annotations.Prototype * *.*(..))")
-//	@Pointcut("execution(* de.dhbw_mannheim.sand.controller.*.*(..))")
+	//@Pointcut("execution(* de.dhbw_mannheim.sand.controller.*.*(..))")
 	private void loggingMethod() {
 	}
 
@@ -93,7 +93,13 @@ public class PrototypeAspect {
 		String userLogin = "";
 			
 			String authorization = (String) args[0];
+			try{
 			user = sessionService.getSessionById(UUID.fromString(authorization)).getUser();
+			}
+			catch(Exception e){
+				//Authorization String is not valid/No valid Session is found corresponding to that entity
+				return new ResponseEntity<Object>(HttpStatus.FORBIDDEN);
+			}
 			//Gets the User Object which is attached to the Request
 			userLogin = user.getLogin();
 			
@@ -107,8 +113,9 @@ public class PrototypeAspect {
 				authorizationChecker = studentControllerAuthorizationChecker;
 			boolean authorized= true;//Change to false as soon as methods are implemented
 			Object param = args[1];
-			
+			System.out.println(targetMethod);
 			switch (targetMethod) {
+			//CheckOther is going to be used by the methods itself
 				case "getById": 
 				case "getStudentById":
 				case "getUserById":

@@ -13,5 +13,5 @@ public interface AuthorizationChecker {
 
 	public abstract boolean checkDelete(User user, int id);
 
-	public abstract boolean checkOther(User user);
+	public abstract boolean checkOther(User user, String method, Object param);
 }
