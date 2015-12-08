@@ -18,6 +18,7 @@ public class ResearchProjectOfferControllerAuthorizationChecker implements Autho
 	
 	@Override
 	public boolean checkGetById(User user, int id) {
+		//Problem bei der Unterscheidung von Studienarbeit und Studienarbeit-Angebot
 		ResearchProject rp = repository.getOne(id);
 		if(rp instanceof ResearchProjectOffer) return true;
 		return false;
@@ -25,7 +26,7 @@ public class ResearchProjectOfferControllerAuthorizationChecker implements Autho
 
 	@Override
 	public boolean checkAdd(User user, LazyObject object) {
-		return(user.isAdmin() || user.isStudent() || user.isTeacher());
+		return(user.isStudent() || user.isTeacher());
 	}
 
 	@Override
