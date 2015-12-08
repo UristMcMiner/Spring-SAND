@@ -1,71 +1,59 @@
-//package de.dhbw_mannheim.sand.service;
-//
-//import java.util.List;
-//
-//import javax.ejb.Stateless;
-//import javax.enterprise.inject.Alternative;
-//import javax.persistence.EntityManager;
-//import javax.persistence.PersistenceContext;
-//import javax.persistence.TypedQuery;
-//
-//import de.dhbw_mannheim.sand.model.Thread;
-//import de.dhbw_mannheim.sand.persistence.IThreadPersistence;
-//
-//@Stateless
-//@Alternative
-//public class ThreadServiceImpl implements IThreadPersistence {
-//
-//	@PersistenceContext(unitName="sand")
-//	private EntityManager entityManager;
-//	
-//	@Override
-//	public List<Thread> getAllThreadsByResearchProjectId(int id, boolean lazy) {
-//		 String jpql = "select t from Thread t where t.hidden = 0 and t.researchProject.id = "+id;
-//		 TypedQuery<Thread> query = entityManager.createQuery(jpql, Thread.class);
-//		 List<Thread> threads = query.getResultList();
-//		 if (!lazy) {
-//			 for (Thread thread: threads) {
-//				 thread.toString();
-//				 thread.getResearchProject();
-//				 thread.getPosts();
-//			 }
-//		 }
-//		 return threads;
+package de.dhbw_mannheim.sand.service;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import de.dhbw_mannheim.sand.model.Role;
+import de.dhbw_mannheim.sand.model.Thread;
+import de.dhbw_mannheim.sand.repository.ThreadRepository;
+
+public class ThreadServiceImpl implements ThreadService {
+
+	@Autowired
+	ThreadRepository thread_rep;
+	
+	@Override
+	public List<Thread> getAllThreadsByResearchProjectId(int id,
+			boolean lazy) {		
+		thread_rep.findByResearchProject(id);
+		return null;
+	}
+
+	@Override
+	public Thread getThreadById(int id) {
+		thread_rep.findByID(id);
+		return null;
+	}
+
+	@Override
+	public int addThread(Thread thread) {
+		return (int) thread_rep.save(thread).getId();
+		
+	}
+
+	@Override
+	public void editThread(Thread thread) {
+		thread_rep.save(thread).getId();
+		
+	}
+
+	@Override
+	public void deleteThreadById(int id) {
+		Thread t = thread_rep.findByID(id);
+//		if (t != null) {
+//			Calendar cal = Calendar.getInstance();
+//			cal.add(Calendar.DATE, -1);
+//			Date yesterday = new java.sql.Date(cal.getTimeInMillis());
+//			t.setEndDate(yesterday);
 //	}
-//
-//	@Override
-//	public Thread getThreadById(int id) {
-//		Thread thread = entityManager.find(Thread.class, id);
-//		if (thread != null) {
-//			 thread.toString();
-//			 thread.getResearchProject();
-//			 thread.getPosts();
-//		}
-//		return thread;
-//	}
-//
-//	@Override
-//	public int addThread(Thread thread) {
-//		entityManager.persist(thread);
-//		entityManager.flush();
-//		return thread.getId();
-//	}
-//
-//	@Override
-//	public void editThread(Thread thread) {
-//		entityManager.merge(thread);
-//		entityManager.flush();
-//	}
-//
-//	@Override
-//	public void deleteThreadById(int id) {
-//		Thread thread = entityManager.find(Thread.class, id);
-//		if (thread != null) {
-//			thread.setHidden(1);
-//			entityManager.flush();
-//		} else {
-//			throw new RuntimeException();
-//		}
-//	}
-//
-//}
+		thread_rep.delete(t);
+	}
+}
