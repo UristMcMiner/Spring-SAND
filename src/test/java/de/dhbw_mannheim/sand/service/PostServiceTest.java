@@ -65,8 +65,6 @@ public class PostServiceTest {
 		assertEquals(postService.getPostById(newPostId).getText(), post.getText());
 		assertTrue(postService.getPostById(newPostId).getThread().getId() == post.getThread().getId());
 		assertEquals(postService.getPostById(newPostId).getTimestamp(), post.getTimestamp());
-
-		System.out.println("done AddPost");
 	}
 	@Test
 	public void testdeletePostById(){
@@ -74,8 +72,6 @@ public class PostServiceTest {
 		assertNotNull(postBefore);
 		postService.deletePostById(1);
 		Post postAfter = postService.getPostById(1);
-
-		System.out.println("done deletePostById");
 		assertNull(postAfter);
 
 	}
@@ -91,8 +87,6 @@ public class PostServiceTest {
 		for(Post post : postService.getAllPostsByThreadId(1, true)){
 			posts.add(post);
 		}
-
-		System.out.println("done getAllPostsByThreadID");
 		assertTrue(posts.size() == 3);
 		
 		assertTrue(posts.get(0).getId() == 1);
@@ -109,31 +103,25 @@ public class PostServiceTest {
 	@Test
 	public void testGetPostById(){
 		Post post = postService.getPostById(1);
-
-		System.out.println("done getPostById");
 		assertTrue(post.getId()==1);
 
 	}
 	@Test
 	public void testGetResearchProjectByPostId(){
-		int id = 0;
+		Integer id = 0;
 
-		// Test 1: ReseachProject mit der Id=10 hat Post mit Id = 3
-		id = postService.getResearchProjectByPostId(4);
-		System.out.println(id);
-		assertTrue(13 == id);
+		// Test 1: ReseachProject mit der Id=1 hat Post mit Id = 10
+		id = postService.getResearchProjectByPostId(1);
+		assertTrue(10 == id);
 
-		// Test 2: ResearchProject mit der Id=23 hat Post mit Id=
-		id = postService.getResearchProjectByPostId(11);
+		// Test 2: ResearchProject mit der Id=10 hat Post mit Id=19
+		id = postService.getResearchProjectByPostId(10);
 		System.out.println(id);
-		assertTrue(20 == id);
+		assertTrue(19 == id);
 
 		// Test 3: Post hat kein dazugehöriges RP
-		id = postService.getResearchProjectByPostId(6);
-		System.out.println(id);
-
-		System.out.println("done getresearchprojectbypostid");
-		assertEquals(null, id);
+		id = postService.getResearchProjectByPostId(41);
+		assertNull(id);
 	}
 
 }

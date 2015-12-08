@@ -48,7 +48,7 @@ public interface PostService {
 	 * @param id
 	 * @return id of ResearchProject as integer
 	 */
-	public int getResearchProjectByPostId(int id);
+	public Integer getResearchProjectByPostId(int id);
 
 
 }
