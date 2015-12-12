@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import de.dhbw_mannheim.sand.repository.ThreadRepository;
 import de.dhbw_mannheim.sand.service.ThreadService;
+import de.dhbw_mannheim.sand.model.Thread;
 
 
 
