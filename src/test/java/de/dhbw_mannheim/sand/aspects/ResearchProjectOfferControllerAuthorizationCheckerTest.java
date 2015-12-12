@@ -28,6 +28,8 @@ import de.dhbw_mannheim.sand.aspects.authorization.ResearchProjectOfferControlle
 import de.dhbw_mannheim.sand.model.Admin;
 import de.dhbw_mannheim.sand.model.Login;
 import de.dhbw_mannheim.sand.model.PasswordChangeRequest;
+import de.dhbw_mannheim.sand.model.ResearchProject;
+import de.dhbw_mannheim.sand.model.ResearchProjectOffer;
 import de.dhbw_mannheim.sand.model.Role;
 import de.dhbw_mannheim.sand.model.User;
 import de.dhbw_mannheim.sand.repository.ResearchProjectOfferRepository;
@@ -52,32 +54,25 @@ public class ResearchProjectOfferControllerAuthorizationCheckerTest {
 
 	 ResearchProjectOfferControllerAuthorizationChecker checker;
 	 
-	 User admin;
 	 User student;
 	 User teacher;
 
 	@Before
 	public void setUp() {
-		admin = service.getUserById(1);//Rainer_Colger
-		student = service.getUserById(3);//Harald_Kornmayer
+		student = service.getUserById(51);
 		teacher = service.getUserById(2);//Joachim Schmidt
 		checker = new ResearchProjectOfferControllerAuthorizationChecker();
 	}
 
 	@Test
 	public void testCheckGetById() throws Exception {
-		
-		List<Role> roles = admin.getRoles();
-		for(Role role : roles){
-			System.out.println(role.toString());
-		}
 		for(Role role : student.getRoles()){
 			System.out.println(role.toString());
 		}
 		for(Role role : teacher.getRoles()){
 			System.out.println(role.toString());
 		}
-		System.out.println(admin.isAdmin());
+
 		
 	}
 	
@@ -88,7 +83,8 @@ public class ResearchProjectOfferControllerAuthorizationCheckerTest {
 	
 	@Test
 	public void testCheckUpdate() throws Exception {
-		
+		List<ResearchProject> rpo = student.getResearchProjects();
+		System.out.println(checker.checkUpdate(student, (ResearchProjectOffer)rpo.get(0) ));
 	}
 	@Test
 	public void testCheckDelete() throws Exception {
