@@ -21,6 +21,7 @@ import de.dhbw_mannheim.sand.service.ThreadService;
 @RequestMapping(value = "/sand/thread")
 public class ThreadController {
 	
+        @Autowired
         private ThreadRepository repository;
 	
 	@Autowired
