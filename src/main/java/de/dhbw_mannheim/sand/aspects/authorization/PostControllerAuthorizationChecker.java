@@ -12,6 +12,7 @@ import de.dhbw_mannheim.sand.model.ResearchProjectOffer;
 import de.dhbw_mannheim.sand.model.Thread;
 import de.dhbw_mannheim.sand.model.User;
 import de.dhbw_mannheim.sand.repository.ResearchProjectOfferRepository;
+import de.dhbw_mannheim.sand.service.PostService;
 
 public class PostControllerAuthorizationChecker implements AuthorizationChecker {
 	
@@ -20,7 +21,7 @@ public class PostControllerAuthorizationChecker implements AuthorizationChecker 
 	//PostRepository repository;
 	
 	@Autowired
-	ResearchProjectOfferRepository rpo_repository;
+	PostService service;
 	
 	
 	@Override
@@ -41,7 +42,7 @@ public class PostControllerAuthorizationChecker implements AuthorizationChecker 
 
 	@Override
 	public boolean checkDelete(User user, int id) {
-		Post post  = new Post(id);
+		Post post  = service.getPostById(id);
 		Thread thread = post.getThread();
 		ResearchProject rp = thread.getResearchProject();
 		return rp.getCreator().equals(user);

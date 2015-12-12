@@ -10,19 +10,17 @@ import de.dhbw_mannheim.sand.model.LazyObject;
 import de.dhbw_mannheim.sand.model.ResearchProjectOffer;
 import de.dhbw_mannheim.sand.model.User;
 import de.dhbw_mannheim.sand.repository.ResearchProjectOfferRepository;
+import de.dhbw_mannheim.sand.service.ThreadService;
 
 public class ThreadControllerAuthorizationChecker implements AuthorizationChecker {
 	
-	//Change as soon ThreadRepository is available
-	//@Autowired
-	//ThreadRepository repository;
 	
 	@Autowired
-	ResearchProjectOfferRepository rpo_repository;
+	ThreadService service;
 	
 	@Override
 	public boolean checkGetById(User user, int id) {
-		Thread thread = new Thread(id);
+		Thread thread = service.getThreadById(id);
 		ResearchProject rp = thread.getResearchProject();
 		if( rp instanceof ResearchProjectOffer){
 			ResearchProjectOffer rpo = (ResearchProjectOffer)rp;
@@ -44,7 +42,7 @@ public class ThreadControllerAuthorizationChecker implements AuthorizationChecke
 
 	@Override
 	public boolean checkDelete(User user, int id) {
-		Thread t = new Thread(id);
+		Thread t = service.getThreadById(id);
 		return t.getResearchProject().getCreator().equals(user);
 	}
 

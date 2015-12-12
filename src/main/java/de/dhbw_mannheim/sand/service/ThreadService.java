@@ -2,7 +2,7 @@ package de.dhbw_mannheim.sand.service;
 
 import java.util.List;
 
-//import de.dhbw_mannheim.sand.model.Thread;
+import de.dhbw_mannheim.sand.model.Thread;
 
 public interface ThreadService {
 

@@ -10,16 +10,19 @@ import de.dhbw_mannheim.sand.model.ResearchProject;
 import de.dhbw_mannheim.sand.model.ResearchProjectOffer;
 import de.dhbw_mannheim.sand.model.User;
 import de.dhbw_mannheim.sand.repository.ResearchProjectOfferRepository;
+import de.dhbw_mannheim.sand.service.ResearchProjectOfferService;
 
 public class ResearchProjectOfferControllerAuthorizationChecker implements AuthorizationChecker{
 	
 	@Autowired
 	private ResearchProjectOfferRepository repository;
+	@Autowired
+	private ResearchProjectOfferService service;
 	
 	@Override
 	public boolean checkGetById(User user, int id) {
 		//Problem bei der Unterscheidung von Studienarbeit und Studienarbeit-Angebot
-		ResearchProject rp = repository.getOne(id);
+		ResearchProject rp = service.getProjectById(id);
 		if(rp instanceof ResearchProjectOffer) return true;
 		return false;
 	}
@@ -33,7 +36,8 @@ public class ResearchProjectOfferControllerAuthorizationChecker implements Autho
 	public boolean checkUpdate(User user, LazyObject object) {
 		
 		ResearchProjectOffer pendingChange = (ResearchProjectOffer)object;
-		ResearchProjectOffer existing = repository.getOne(pendingChange.getId());
+		//Changed to Service
+		ResearchProjectOffer existing = service.getProjectById(pendingChange.getId());
 		List<User> listBefore = existing.getUsers();
 		List<User> listAfter  = pendingChange.getUsers();
 	
