@@ -2,17 +2,10 @@ package de.dhbw_mannheim.sand.service;
 
 import static org.junit.Assert.*;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 
-import javax.annotation.Resource;
-import javax.sql.DataSource;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,23 +14,15 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.mysql.jdbc.Connection;
-import com.mysql.jdbc.PreparedStatement;
-
 import de.dhbw_mannheim.sand.SAND;
 import de.dhbw_mannheim.sand.model.ResearchProject;
 import de.dhbw_mannheim.sand.model.ResearchProjectOffer;
-import de.dhbw_mannheim.sand.model.Role;
-import de.dhbw_mannheim.sand.model.Teacher;
 import de.dhbw_mannheim.sand.model.User;
 import de.dhbw_mannheim.sand.model.Thread;
 import de.dhbw_mannheim.sand.model.Post;
 import de.dhbw_mannheim.sand.repository.ResearchProjectOfferRepository;
-import de.dhbw_mannheim.sand.repository.TeacherRepository;
 import de.dhbw_mannheim.sand.repository.ThreadRepository;
 import de.dhbw_mannheim.sand.repository.UserRepository;
-
-//so Datei ändern um neu zu pushen....
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes=SAND.class)
