@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import de.dhbw_mannheim.sand.model.Thread;
+import de.dhbw_mannheim.sand.repository.ThreadRepository;
+import de.dhbw_mannheim.sand.service.ThreadService;
 
 
 
@@ -21,6 +21,7 @@ import de.dhbw_mannheim.sand.model.Thread;
 @RequestMapping(value = "/sand/thread")
 public class ThreadController {
 	
+        private ThreadRepository repository;
 	
 	@Autowired
 	private ThreadService service;
@@ -31,49 +32,53 @@ public class ThreadController {
 	@ResponseBody
 	public ResponseEntity<Thread> getById(
 	@RequestHeader(value="authorization", defaultValue="X") String authorization, @PathVariable(value = "id") int id) {
-	try {
-	Thread thread = service.getThreadById(id);
-	if (thread != null) {
-	return new ResponseEntity<>(thread, HttpStatus.OK);
-	}
-	
-	return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-	} catch (Exception e) {
-	return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-	}
+            try {
+                Thread thread = service.getThreadById(id);
+                if (thread != null) {
+                    return new ResponseEntity<>(thread, HttpStatus.OK);
+                }else{	
+                    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                }
+            } catch (Exception e) {
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
 	}
 	
 	 
 	@RequestMapping(method = RequestMethod.POST, value="/")
 	public ResponseEntity<Thread> addThread(
 	@RequestHeader(value="authorization", defaultValue="X") String authorization, @RequestBody Thread thread) {
-	int id = service.addPost(thread);
-	return new ResponseEntity<Thread>(service.getThreadById(id) , HttpStatus.CREATED);
+           try{            
+                int id = service.addThread(thread);
+                return new ResponseEntity<Thread>(service.getThreadById(id) , HttpStatus.CREATED);
+           }catch(Exception e){
+               return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+           }
 	}
 	
 	
 	@RequestMapping(method = RequestMethod.PUT, value = "/")
 	public ResponseEntity<Thread> editThread(
 	@RequestHeader(value="authorization", defaultValue="X") String authorization, @RequestBody Thread thread) {
-	if (thread.getHidden()) {
-	try {
-	service.deleteThreadById(thread.getId());
-	} catch (RuntimeException re) {
-	return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-	}
-
-	return new ResponseEntity<>(service.getPostById(thread.getId()), HttpStatus.OK);
-	}
 	
-	return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-	}
+            // Thread not allowed to edit
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
 	
 	
 	
 	@RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
-	public ResponseEntity<Thread> deletePost(
+	public ResponseEntity<Thread> deleteThread(
 	@RequestHeader(value="authorization", defaultValue="X") String authorization, @PathVariable(value = "id") int id) {
-	return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+	
+            try{                
+                service.deleteThreadById(id);
+                return new ResponseEntity<>(HttpStatus.OK);
+            
+            }catch(Exception e){
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            
 	}
 	
 }
