@@ -18,7 +18,7 @@ import de.dhbw_mannheim.sand.service.ThreadService;
 
 @CrossOrigin
 @RestController
-@RequestMapping(value = "/sand/thread")
+@RequestMapping(value = "/sand/threads")
 public class ThreadController {
 	
         @Autowired
@@ -36,7 +36,7 @@ public class ThreadController {
             try {
                 Thread thread = service.getThreadById(id);
                 if (thread != null) {
-                    return new ResponseEntity<>(thread, HttpStatus.OK);
+                    return new ResponseEntity<Thread>(thread, HttpStatus.OK);
                 }else{	
                     return new ResponseEntity<>(HttpStatus.NOT_FOUND);
                 }
@@ -47,7 +47,7 @@ public class ThreadController {
 	
 	 
 	@RequestMapping(method = RequestMethod.POST, value="/")
-	public ResponseEntity<Thread> addThread(
+	public ResponseEntity<Thread> add(
 	@RequestHeader(value="authorization", defaultValue="X") String authorization, @RequestBody Thread thread) {
            try{            
                 int id = service.addThread(thread);
@@ -59,7 +59,7 @@ public class ThreadController {
 	
 	
 	@RequestMapping(method = RequestMethod.PUT, value = "/")
-	public ResponseEntity<Thread> editThread(
+	public ResponseEntity<Thread> edit(
 	@RequestHeader(value="authorization", defaultValue="X") String authorization, @RequestBody Thread thread) {
 	
             // Thread not allowed to edit
@@ -69,7 +69,7 @@ public class ThreadController {
 	
 	
 	@RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
-	public ResponseEntity<Thread> deleteThread(
+	public ResponseEntity<Thread> delete(
 	@RequestHeader(value="authorization", defaultValue="X") String authorization, @PathVariable(value = "id") int id) {
 	
             try{                
