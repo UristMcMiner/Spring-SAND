@@ -20,6 +20,10 @@ public class ThreadServiceImpl implements ThreadService {
 		return null;
 	}
 
+	
+	//Manchmal wird hier ein Fehler angezeigt, der keiner ist.
+	//"Cannot cast from List<Thread> to Thread." Alle Input-/Return-Paramater sind Threads,
+	//es liegt also kein Fehler vor. Diese Klasse speichern löst das Problem normal.
 	@Override
 	public Thread getThreadById(int id) {
 		return thread_rep.findOne(id);

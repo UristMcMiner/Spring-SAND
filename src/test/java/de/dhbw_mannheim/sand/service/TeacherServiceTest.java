@@ -2,9 +2,11 @@ package de.dhbw_mannheim.sand.service;
 
 import static org.junit.Assert.*;
 
+import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -12,6 +14,7 @@ import java.util.List;
 import javax.annotation.Resource;
 import javax.sql.DataSource;
 
+import org.dom4j.io.SAXWriter;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,18 +48,20 @@ public class TeacherServiceTest {
 
 	@Test
 	public void testGetRolesByUserId() {
-
+		
 		int userID = 0;
 		List<Role> actual = new ArrayList<>();
 		List<Role> expected = new ArrayList<>();
 
 		// Test 1: nur eine Rolle
 		userID = 3;
+		@SuppressWarnings("deprecation")
 		Date beginDatum = new Date(2012, 10, 01);
+		@SuppressWarnings("deprecation")
 		Date endDatum = new Date(2015, 9, 30);
 		actual.add(new Teacher(2, new User(userID), beginDatum, endDatum, "0190-123456", "314B"));
 		expected = teacher.getRolesByUserId(userID);
-//		assertEquals(actual.get(0).getPhone(), expected.get(0).getPhone());
+//		assertEquals(actual.get(0).(), expected.get(0).getPhone());
 		assertEquals(actual.get(0).getId(), expected.get(0).getId());
 		assertEquals(((Teacher)actual.get(0)).getRoom(), ((Teacher)expected.get(0)).getRoom());
 		assertEquals(actual.get(0).getUser(), expected.get(0).getUser());
@@ -172,10 +177,11 @@ public class TeacherServiceTest {
 	}
 
 	@Test
-	@Ignore
 	public void testDeleteRoleByIDSuccess() {
 		teacher.deleteRoleById(2);
-		Date endDatum = new Date(2015, 05, 25);
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DATE, -1);
+		Date endDatum = new java.sql.Date(cal.getTimeInMillis());
 		assertEquals(endDatum, teacher.getRoleById(2).getEndDate());
 	}
 

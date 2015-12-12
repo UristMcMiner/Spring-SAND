@@ -11,7 +11,8 @@ import de.dhbw_mannheim.sand.model.User;
 
 public interface TeacherRepository extends JpaRepository<Teacher,Integer> {
 	
-	@Query("select r from Teacher r where r.user = ?1")
+	//@Query("select r from Teacher r where r.user = ?1")
+	//Wird automatisch generiert
 	List<Role> findByUser(User user);
-	
+
 }

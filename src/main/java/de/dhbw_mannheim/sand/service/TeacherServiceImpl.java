@@ -21,7 +21,7 @@ public class TeacherServiceImpl extends RoleServiceImpl implements
 		TeacherService {
 
 	@Autowired
-	private TeacherRepository repository;
+	private TeacherRepository teacher_rep;
 	
 	@Autowired
 	private UserRepository userRepository;
@@ -32,31 +32,31 @@ public class TeacherServiceImpl extends RoleServiceImpl implements
 		if (user == null) {
 			return new ArrayList<Role>();
 		}
-		return repository.findByUser(user);
+		return teacher_rep.findByUser(user);
 	}
 	
 	@Override
 	public Role getRoleById(int id) {
-		return repository.findOne(id);
+		return teacher_rep.findOne(id);
 	}
 
 	@Override
 	@Transactional(propagation=Propagation.REQUIRED)
 	public int addRole(Role role) {
-		role = repository.save((Teacher)role);
+		role = teacher_rep.save((Teacher)role);
 		return role.getId();
 	}
 
 	@Override
 	@Transactional(propagation=Propagation.REQUIRED)
 	public void editRole(Role role) {
-		repository.save((Teacher)role);
+		teacher_rep.save((Teacher)role);
 	}
 
 	@Override
 	@Transactional(propagation=Propagation.REQUIRED)
 	public void deleteRoleById(int id) {
-		Role role = repository.findOne(id);
+		Role role = teacher_rep.findOne(id);
 		if (role != null) {
 			Calendar cal = Calendar.getInstance();
 			cal.add(Calendar.DATE, -1);
