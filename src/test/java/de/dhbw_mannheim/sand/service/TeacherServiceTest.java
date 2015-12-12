@@ -2,20 +2,12 @@ package de.dhbw_mannheim.sand.service;
 
 import static org.junit.Assert.*;
 
-import java.io.Serializable;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 
-import javax.annotation.Resource;
-import javax.sql.DataSource;
-
-import org.dom4j.io.SAXWriter;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +15,6 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.mysql.jdbc.Connection;
-import com.mysql.jdbc.PreparedStatement;
 
 import de.dhbw_mannheim.sand.SAND;
 import de.dhbw_mannheim.sand.model.Role;
