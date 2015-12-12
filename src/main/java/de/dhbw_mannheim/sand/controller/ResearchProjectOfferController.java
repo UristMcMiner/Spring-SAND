@@ -10,24 +10,18 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import de.dhbw_mannheim.sand.annotations.Prototype;
 import de.dhbw_mannheim.sand.model.ResearchProjectOffer;
-import de.dhbw_mannheim.sand.model.Student;
-import de.dhbw_mannheim.sand.repository.ResearchProjectOfferRepository;
 import de.dhbw_mannheim.sand.service.ResearchProjectOfferService;
-import de.dhbw_mannheim.sand.service.UserService;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @CrossOrigin
 @RestController
 @RequestMapping(value = "/sand/researchprojectoffer")
 public class ResearchProjectOfferController {
-	
-//        @Autowired
-//        private ResearchProjectOfferRepository repository;
 	
 	@Autowired
 	private ResearchProjectOfferService service;
@@ -42,10 +36,9 @@ public class ResearchProjectOfferController {
 //	@Prototype
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
-	public List<ResearchProjectOffer> getResearchProjectOffers(
-			@RequestHeader(value="authorization", defaultValue="X") String authorization ){
-		List<ResearchProjectOffer> offers = service.getAllProjects();
-		return offers;
+	public List<ResearchProjectOffer> getAll(@RequestHeader(value="authorization", defaultValue="X") String authorization ){
+            List<ResearchProjectOffer> offers = service.getAllProjects();
+            return offers;   
 	}
         
 	/**
@@ -97,12 +90,15 @@ public class ResearchProjectOfferController {
 	/**
 	 * REST-Endpoint for creating a new ResearchProjectOffer
 	 *
+         * @param authorization
          * @param offer
 	 * @return The created ResearchProjectOffer
 	 *
 	 */
         @RequestMapping(method=RequestMethod.POST)
-        public ResponseEntity<ResearchProjectOffer> addResearchProjectOffer(ResearchProjectOffer offer) {
+        public ResponseEntity<ResearchProjectOffer> add( 
+                @RequestHeader(value="authorization", defaultValue="X") String authorization, 
+                @RequestBody ResearchProjectOffer offer) {
 		try {
                     int id = service.addProject(offer);
                     ResearchProjectOffer createdOffer = service.getProjectById(id);;
@@ -115,12 +111,15 @@ public class ResearchProjectOfferController {
         /**
 	 * REST-Endpoint for editing ResearchProjectOffer
 	 *
+         * @param authorization
          * @param offer
 	 * @return The created ResearchProjectOffer
 	 *
 	 */
         @RequestMapping(method=RequestMethod.PUT)
-        public ResponseEntity<ResearchProjectOffer> editResearchProjectOffer(ResearchProjectOffer offer) {
+        public ResponseEntity<ResearchProjectOffer> edit(
+                @RequestHeader(value="authorization", defaultValue="X") String authorization, 
+                @RequestBody ResearchProjectOffer offer) {
 		try {
                     service.editProject(offer);
                     return new ResponseEntity<>(service.getProjectById(offer.getId()), HttpStatus.OK);
@@ -138,8 +137,9 @@ public class ResearchProjectOfferController {
 	 *
 	 */
         @RequestMapping(method=RequestMethod.DELETE)
-        public ResponseEntity<ResearchProjectOffer> deleteResearchProjectOffer(@RequestHeader(value="authorization", defaultValue="X") String authorization, 
-			@PathVariable(value = "id") int id) {
+        public ResponseEntity<ResearchProjectOffer> delete(
+                @RequestHeader(value="authorization", defaultValue="X") String authorization, 
+                @PathVariable(value = "id") int id) {
 		try {
                     service.deleteProjectById(id);
                     return new ResponseEntity<>(HttpStatus.OK);

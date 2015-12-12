@@ -1,7 +1,6 @@
 package de.dhbw_mannheim.sand.controller;
 
 import de.dhbw_mannheim.sand.model.Post;
-import de.dhbw_mannheim.sand.model.User;
 import de.dhbw_mannheim.sand.service.PostService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/sand/posts")
 public class PostController {
 	
-//	@Autowired
-//	private PostRepository repository;
-	
 	@Autowired
 	private PostService service;
 	
@@ -40,7 +36,8 @@ public class PostController {
 	@RequestMapping(method = RequestMethod.GET, value = "/{id}")
 	@ResponseBody
 	public ResponseEntity<Post> getById(
-                @RequestHeader(value="authorization", defaultValue="X") String authorization, @PathVariable(value = "id") int id) {
+                @RequestHeader(value="authorization", defaultValue="X") String authorization, 
+                @PathVariable(value = "id") int id) {
                 try {
 			Post post = service.getPostById(id);
                         if (post != null) {
@@ -62,10 +59,11 @@ public class PostController {
 	 */
 
 	@RequestMapping(method = RequestMethod.POST, value="/")
-	public ResponseEntity<Post> addPost(
-                @RequestHeader(value="authorization", defaultValue="X") String authorization, @RequestBody Post post) {
+	public ResponseEntity<Post> add(
+                @RequestHeader(value="authorization", defaultValue="X") String authorization, 
+                @RequestBody Post post) {
                 int id = service.addPost(post);
-		return new ResponseEntity<Post>(service.getPostById(id) , HttpStatus.CREATED);
+		return new ResponseEntity<>(service.getPostById(id), HttpStatus.CREATED);
 	}
 	
 	/**
@@ -78,8 +76,9 @@ public class PostController {
 	 */
 	
 	@RequestMapping(method = RequestMethod.PUT, value = "/")
-	public ResponseEntity<Post> editPost(
-                @RequestHeader(value="authorization", defaultValue="X") String authorization, @RequestBody Post post) {
+	public ResponseEntity<Post> edit(
+                @RequestHeader(value="authorization", defaultValue="X") String authorization, 
+                @RequestBody Post post) {
                     if (post.getHidden()) {
 			try {
 				service.deletePostById(post.getId());
@@ -103,8 +102,9 @@ public class PostController {
 	 */
 
 	@RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
-	public ResponseEntity<Post> deletePost(
-            @RequestHeader(value="authorization", defaultValue="X") String authorization, @PathVariable(value = "id") int id) {
+	public ResponseEntity<Post> delete(
+            @RequestHeader(value="authorization", defaultValue="X") String authorization, 
+            @PathVariable(value = "id") int id) {
                 // not allowed, posts can only be hidden by putting a post with hidden = true	
                 return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 	}
