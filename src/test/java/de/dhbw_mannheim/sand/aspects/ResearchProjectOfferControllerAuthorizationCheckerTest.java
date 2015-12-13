@@ -60,6 +60,7 @@ public class ResearchProjectOfferControllerAuthorizationCheckerTest {
 	 @Autowired
 	 private ResearchProjectOfferControllerAuthorizationChecker checker;
 	 
+	 private User other;
 	 private User student;
 	 private User teacher;
 	 private ResearchProjectOffer test;
@@ -69,12 +70,14 @@ public class ResearchProjectOfferControllerAuthorizationCheckerTest {
 		//UPDATE 
 		student = userService.getUserById(32);
 		teacher = userService.getUserById(2);//Joachim Schmidt
+		other = userService.getUserById(4);
 	}
 
 	@Test
 	public void testCheckGetById() throws Exception {
 		Assert.assertTrue(checker.checkGetById(student, student.getResearchProjects().get(0).getId()));
 		Assert.assertTrue(checker.checkGetById(teacher, student.getResearchProjects().get(0).getId()));
+		Assert.assertTrue(checker.checkGetById(other, student.getResearchProjects().get(0).getId()));
 	}
 	
 	@Test
@@ -83,6 +86,7 @@ public class ResearchProjectOfferControllerAuthorizationCheckerTest {
 		for (ResearchProject rp : rpo){
 		Assert.assertTrue(checker.checkAdd(student, rp));
 		Assert.assertTrue(checker.checkAdd(teacher, rp));
+		Assert.assertFalse(checker.checkAdd(other, rp));
 		}
 	}
 	
@@ -90,8 +94,14 @@ public class ResearchProjectOfferControllerAuthorizationCheckerTest {
 	public void testCheckUpdate() throws Exception {
 		List<ResearchProject> rpo = student.getResearchProjects();
 		for (ResearchProject rp : rpo){
+			ResearchProjectOffer rp_c = (ResearchProjectOffer)rp;
 			//Test Case: User is Creator
 			Assert.assertTrue(checker.checkUpdate(student, rp));
+			//Test Case: User is Creator and changes something
+			ResearchProjectOffer rp_clone = new ResearchProjectOffer(rp.getId(),"TEST", rp.getCreator(),  rp.getDescription(), rp.getDescriptionLong(), rp_c.getVisible(), rp_c.getUsers(),rp_c.getThreads());
+			Assert.assertTrue(checker.checkUpdate(student, rp_clone));
+			//Test Case: Unauthorized user tries to change something
+			Assert.assertFalse(checker.checkUpdate(teacher, rp_clone));
 			Assert.assertFalse(checker.checkUpdate(teacher, rp));
 		}
 		//Get a ResearchProjectOffer different from 12
