@@ -10,6 +10,7 @@ import de.dhbw_mannheim.sand.model.LazyObject;
 import de.dhbw_mannheim.sand.model.ResearchProject;
 import de.dhbw_mannheim.sand.model.ResearchProjectOffer;
 import de.dhbw_mannheim.sand.model.User;
+import de.dhbw_mannheim.sand.model.Thread;
 import de.dhbw_mannheim.sand.repository.ResearchProjectOfferRepository;
 import de.dhbw_mannheim.sand.service.ResearchProjectOfferService;
 @Component
@@ -75,16 +76,22 @@ public class ResearchProjectOfferControllerAuthorizationChecker implements Autho
 		return false;
 	}
 	
-	private boolean EqualsExceptUsers(ResearchProjectOffer rpo1, ResearchProjectOffer rpo2){
-		return( rpo1.getCreator().equals(rpo2.getCreator()) &&
-				rpo1.getVisible() == rpo2.getVisible() &&
-				rpo1.getDescription().equals(rpo2.getDescription()) &&
-				rpo1.getDescriptionLong().equals(rpo2.getDescriptionLong()) &&
-				rpo1.getId() == rpo2.getId() &&
-				rpo1.getThreads().equals(rpo2.getThreads()) &&
-				rpo1.getTitle().equals(rpo2.getTitle()) &&
-				rpo1.getUuid() == rpo2.getUuid()
+	private boolean EqualsExceptUsers(ResearchProjectOffer rpo_b, ResearchProjectOffer rpo_a){
+		return( rpo_b.getCreator().equals(rpo_a.getCreator()) &&
+				rpo_b.getVisible() == rpo_a.getVisible() &&
+				rpo_b.getDescription().equals(rpo_a.getDescription()) &&
+				rpo_b.getDescriptionLong().equals(rpo_a.getDescriptionLong()) &&
+				rpo_b.getId() == rpo_a.getId() &&
+				ThreadsEqual(rpo_b.getThreads(),rpo_a.getThreads()) &&
+				rpo_b.getTitle().equals(rpo_a.getTitle())
 				);
+	}
+	private boolean ThreadsEqual(List<Thread> l_b, List<Thread> l_a){
+			boolean test = true;
+			for( Thread t : l_a){
+				if(!l_b.contains(t)) test = false;
+			}
+			return test;
 	}
 
 }
