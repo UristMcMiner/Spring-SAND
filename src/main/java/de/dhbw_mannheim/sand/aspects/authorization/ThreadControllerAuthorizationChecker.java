@@ -3,6 +3,7 @@ package de.dhbw_mannheim.sand.aspects.authorization;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import de.dhbw_mannheim.sand.model.ResearchProject;
 import de.dhbw_mannheim.sand.model.Thread;
@@ -11,6 +12,7 @@ import de.dhbw_mannheim.sand.model.ResearchProjectOffer;
 import de.dhbw_mannheim.sand.model.User;
 import de.dhbw_mannheim.sand.repository.ResearchProjectOfferRepository;
 import de.dhbw_mannheim.sand.service.ThreadService;
+
 
 public class ThreadControllerAuthorizationChecker implements AuthorizationChecker {
 	

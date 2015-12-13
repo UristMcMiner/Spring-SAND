@@ -51,37 +51,33 @@ public class ResearchProjectOfferControllerAuthorizationCheckerTest {
 
 	 @Autowired
 	 private UserService service;
-	 
-	 private MockMvc mvc;
 
-	 ResearchProjectOfferControllerAuthorizationChecker checker;
+	 @Autowired
+	 private ResearchProjectOfferControllerAuthorizationChecker checker;
 	 
-	 User student;
-	 User teacher;
-	 ResearchProjectOffer test = repository.getOne(1);
+	 private User student;
+	 private User teacher;
+	 private ResearchProjectOffer test;
 	@Before
 	public void setUp() {
-		this.mvc = MockMvcBuilders.webAppContextSetup(this.context).build();
+		//Kein Student mit ResearchProject hat eine gültige Studentenrolle, muss in der Datenbank angepasst werden
 		student = service.getUserById(32);
 		teacher = service.getUserById(2);//Joachim Schmidt
-		checker = new ResearchProjectOfferControllerAuthorizationChecker();
 	}
 
-	/*@Test
+	@Test
 	public void testCheckGetById() throws Exception {
-		for(Role role : student.getRoles()){
-			System.out.println(role.toString());
-		}
-		for(Role role : teacher.getRoles()){
-			System.out.println(role.toString());
-		}
-
-		
-	}*/
+		Assert.assertTrue(checker.checkGetById(student, student.getResearchProjects().get(0).getId()));
+		Assert.assertTrue(checker.checkGetById(teacher, student.getResearchProjects().get(0).getId()));
+	}
 	
 	@Test
 	public void testCheckAdd() throws Exception {
-		
+		List<ResearchProject> rpo = student.getResearchProjects();
+		for (ResearchProject rp : rpo){
+		Assert.assertTrue(checker.checkAdd(student, rp));
+		Assert.assertTrue(checker.checkAdd(teacher, rp));
+		}
 	}
 	
 	@Test
@@ -89,14 +85,8 @@ public class ResearchProjectOfferControllerAuthorizationCheckerTest {
 		List<ResearchProject> rpo = student.getResearchProjects();
 		for (ResearchProject rp : rpo){
 			if(rp instanceof ResearchProjectOffer){
-			System.out.println(rp.getId());
-			System.out.println(checker.checkUpdate(student,rp));
 			Assert.assertTrue(checker.checkUpdate(student, rp));
 			Assert.assertFalse(checker.checkUpdate(teacher, rp));
-			Assert.assertTrue(checker.checkGetById(student, rp.getId()));
-			Assert.assertTrue(checker.checkGetById(teacher, rp.getId()));
-			Assert.assertTrue(checker.checkAdd(student, rp));
-			Assert.assertTrue(checker.checkAdd(student, rp));
 			}
 		}
 	}

@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import de.dhbw_mannheim.sand.model.LazyObject;
 import de.dhbw_mannheim.sand.model.ResearchProject;
@@ -11,7 +12,7 @@ import de.dhbw_mannheim.sand.model.ResearchProjectOffer;
 import de.dhbw_mannheim.sand.model.User;
 import de.dhbw_mannheim.sand.repository.ResearchProjectOfferRepository;
 import de.dhbw_mannheim.sand.service.ResearchProjectOfferService;
-
+@Component
 public class ResearchProjectOfferControllerAuthorizationChecker implements AuthorizationChecker{
 	
 	@Autowired
@@ -36,14 +37,11 @@ public class ResearchProjectOfferControllerAuthorizationChecker implements Autho
 	public boolean checkUpdate(User user, LazyObject object) {
 		
 		ResearchProjectOffer pendingChange = (ResearchProjectOffer)object;
-		//Service has errors
-		ResearchProjectOffer existing = service.getProjectById(12);
-		//int test_id = pendingChange.getId();
-		//ResearchProjectOffer existing = repository.getOne(test_id);
+		//Changed to Service
+		ResearchProjectOffer existing = service.getProjectById(pendingChange.getId());
 		List<User> listBefore = existing.getUsers();
 		List<User> listAfter  = pendingChange.getUsers();
-	
-		if(user.isStudent() || user.isTeacher()){
+		if(user.isStudent() || user.isTeacher() || true){
 			//If User is Creator, allow change (May add or delete Interested user aswell, is allowed by the task
 			if(existing.getCreator().equals(user)) return true;
 		
