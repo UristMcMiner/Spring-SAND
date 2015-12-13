@@ -55,8 +55,8 @@ public class ThreadControllerTest {
 	@Test
 	public void testGetById() throws Exception {
 		Login login = new Login();
-		login.setLogin("Dziwas_SE");
-		login.setPassword("Dziwas_SE");
+		login.setLogin("Rainer_Colgen");
+		login.setPassword("Rainer_Colgen");
 		ObjectMapper mapper = new ObjectMapper();
 		PrettyPrinter printer = new DefaultPrettyPrinter();
 		ObjectWriter writer = mapper.writer().with(printer);
@@ -86,8 +86,8 @@ public class ThreadControllerTest {
 	@Test
 	public void testAdd() throws Exception {
 		Login login = new Login();
-		login.setLogin("Dziwas_SE");
-		login.setPassword("Dziwas_SE");
+		login.setLogin("Rainer_Colgen");
+		login.setPassword("Rainer_Colgen");
 		ObjectMapper mapper = new ObjectMapper();
 		PrettyPrinter printer = new DefaultPrettyPrinter();
 		ObjectWriter writer = mapper.writer().with(printer);
@@ -122,8 +122,8 @@ public class ThreadControllerTest {
 	@Test
 	public void testEdit() throws Exception {
 		Login login = new Login();
-		login.setLogin("Dziwas_SE");
-		login.setPassword("Dziwas_SE");
+		login.setLogin("Rainer_Colgen");
+		login.setPassword("Rainer_Colgen");
 		ObjectMapper mapper = new ObjectMapper();
 		PrettyPrinter printer = new DefaultPrettyPrinter();
 		ObjectWriter writer = mapper.writer().with(printer);
@@ -169,8 +169,8 @@ public class ThreadControllerTest {
 	@Test
 	public void testDelete() throws Exception {
 		Login login = new Login();
-		login.setLogin("Dziwas_SE");
-		login.setPassword("Dziwas_SE");
+		login.setLogin("Rainer_Colgen");
+		login.setPassword("Rainer_Colgen");
 		ObjectMapper mapper = new ObjectMapper();
 		PrettyPrinter printer = new DefaultPrettyPrinter();
 		ObjectWriter writer = mapper.writer().with(printer);
