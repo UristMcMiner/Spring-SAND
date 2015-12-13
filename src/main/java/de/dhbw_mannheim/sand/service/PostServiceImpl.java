@@ -59,8 +59,9 @@ public class PostServiceImpl implements PostService {
 	public void deletePostById(int id) {
 		Post post = postRepository.findOne(id);
 		if(post != null){
-			postRepository.delete(post);
-		}				
+			post.setHidden(true);
+			postRepository.save(post);
+		}
 	}
 
 	@Override
