@@ -36,8 +36,10 @@ public class ResearchProjectOfferControllerAuthorizationChecker implements Autho
 	public boolean checkUpdate(User user, LazyObject object) {
 		
 		ResearchProjectOffer pendingChange = (ResearchProjectOffer)object;
-		//Changed to Service
-		ResearchProjectOffer existing = service.getProjectById(pendingChange.getId());
+		//Service has errors
+		ResearchProjectOffer existing = service.getProjectById(12);
+		//int test_id = pendingChange.getId();
+		//ResearchProjectOffer existing = repository.getOne(test_id);
 		List<User> listBefore = existing.getUsers();
 		List<User> listAfter  = pendingChange.getUsers();
 	

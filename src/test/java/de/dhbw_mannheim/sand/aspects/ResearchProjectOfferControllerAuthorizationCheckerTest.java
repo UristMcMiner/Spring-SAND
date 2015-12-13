@@ -6,6 +6,7 @@ import java.util.Random;
 
 import javax.transaction.Transactional;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,25 +47,27 @@ public class ResearchProjectOfferControllerAuthorizationCheckerTest {
 	 private WebApplicationContext context;
 	 
 	 @Autowired
-	 ResearchProjectOfferRepository repository;
+	 private ResearchProjectOfferRepository repository;
 
 	 @Autowired
-	 UserService service;
+	 private UserService service;
 	 
+	 private MockMvc mvc;
 
 	 ResearchProjectOfferControllerAuthorizationChecker checker;
 	 
 	 User student;
 	 User teacher;
-
+	 ResearchProjectOffer test = repository.getOne(1);
 	@Before
 	public void setUp() {
-		student = service.getUserById(51);
+		this.mvc = MockMvcBuilders.webAppContextSetup(this.context).build();
+		student = service.getUserById(32);
 		teacher = service.getUserById(2);//Joachim Schmidt
 		checker = new ResearchProjectOfferControllerAuthorizationChecker();
 	}
 
-	@Test
+	/*@Test
 	public void testCheckGetById() throws Exception {
 		for(Role role : student.getRoles()){
 			System.out.println(role.toString());
@@ -74,7 +77,7 @@ public class ResearchProjectOfferControllerAuthorizationCheckerTest {
 		}
 
 		
-	}
+	}*/
 	
 	@Test
 	public void testCheckAdd() throws Exception {
@@ -84,7 +87,18 @@ public class ResearchProjectOfferControllerAuthorizationCheckerTest {
 	@Test
 	public void testCheckUpdate() throws Exception {
 		List<ResearchProject> rpo = student.getResearchProjects();
-		System.out.println(checker.checkUpdate(student, (ResearchProjectOffer)rpo.get(0) ));
+		for (ResearchProject rp : rpo){
+			if(rp instanceof ResearchProjectOffer){
+			System.out.println(rp.getId());
+			System.out.println(checker.checkUpdate(student,rp));
+			Assert.assertTrue(checker.checkUpdate(student, rp));
+			Assert.assertFalse(checker.checkUpdate(teacher, rp));
+			Assert.assertTrue(checker.checkGetById(student, rp.getId()));
+			Assert.assertTrue(checker.checkGetById(teacher, rp.getId()));
+			Assert.assertTrue(checker.checkAdd(student, rp));
+			Assert.assertTrue(checker.checkAdd(student, rp));
+			}
+		}
 	}
 	@Test
 	public void testCheckDelete() throws Exception {
