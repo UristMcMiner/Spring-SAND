@@ -1,7 +1,12 @@
 package de.dhbw_mannheim.sand.controller;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import javax.transaction.Transactional;
 
@@ -28,21 +33,14 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 
 import de.dhbw_mannheim.sand.SAND;
 import de.dhbw_mannheim.sand.model.Login;
-import de.dhbw_mannheim.sand.model.Student;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import de.dhbw_mannheim.sand.model.Thread;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = SAND.class)
 @Transactional
 @Rollback(value=true)
 @WebAppConfiguration
-public class StudentControllerTest {
+public class ThreadControllerTest {
 
 	@Autowired
 	private WebApplicationContext context;
@@ -53,12 +51,12 @@ public class StudentControllerTest {
 	public void setUp() {
 		this.mvc = MockMvcBuilders.webAppContextSetup(this.context).build();
 	}
-
+	
 	@Test
-	public void testGetStudentById() throws Exception {
+	public void testGetById() throws Exception {
 		Login login = new Login();
-		login.setLogin("Rainer_Colgen");
-		login.setPassword("Rainer_Colgen");
+		login.setLogin("Dziwas_SE");
+		login.setPassword("Dziwas_SE");
 		ObjectMapper mapper = new ObjectMapper();
 		PrettyPrinter printer = new DefaultPrettyPrinter();
 		ObjectWriter writer = mapper.writer().with(printer);
@@ -72,29 +70,24 @@ public class StudentControllerTest {
 		int finish = object.indexOf("user")-3;
 		String authorization = object.substring(7, finish);
 		System.out.println("AUTH: "+authorization);
-		MockHttpServletRequestBuilder getRequest = get("/sand/users/1");
+		MockHttpServletRequestBuilder getRequest = get("/sand/threads/1");
 		getRequest.header("authorization", authorization);
 		ResultActions result;
 		result = mvc.perform(getRequest);
 		result.andDo(print());
 		result.andExpect(status().isOk());
-		result.andExpect(jsonPath("$.login").value("Rainer_Colgen"));
-		getRequest = get("/sand/students/9999");
-		getRequest.header("authorization", authorization);
-		result = mvc.perform(getRequest);
-		result.andExpect(status().isNotFound());
-		getRequest = get("/sand/students/5");
+		getRequest = get("/sand/threads/9999");
 		getRequest.header("authorization", authorization);
 		result = mvc.perform(getRequest);
 		result.andDo(print());
-		result.andExpect(status().isOk());
-	}        
-        
-        @Test
+		result.andExpect(status().isNotFound());
+	}
+	
+	@Test
 	public void testAdd() throws Exception {
 		Login login = new Login();
-		login.setLogin("Rainer_Colgen");
-		login.setPassword("Rainer_Colgen");
+		login.setLogin("Dziwas_SE");
+		login.setPassword("Dziwas_SE");
 		ObjectMapper mapper = new ObjectMapper();
 		PrettyPrinter printer = new DefaultPrettyPrinter();
 		ObjectWriter writer = mapper.writer().with(printer);
@@ -109,17 +102,13 @@ public class StudentControllerTest {
 		String authorization = object.substring(7, finish);
 		System.out.println("AUTH: "+authorization);
 		
-		//generate Student JSON
-		String content = "{\"type\" : \"student\","
-				+ "\"id\" : 2,"
-				+ "\"user\" : {\"id\": 2,"
-				+ "\"deleted\" : 0,"
-				+ "\"roles\" : [ ]},"
-				+ "\"startDate\" : \"1990-08-12\","
-				+ "\"endDate\" : \"2998-12-31\","
-				+ "\"enrollmentNumber\" : \"66555\"}";
+		//generate Thread JSON
+		String content = "{\"title\" : \"Testtitle\","
+				+ "\"posts\" : [],"
+				+ "\"researchProject\" : {\"type\": \"ResearchProject\","
+				+ "\"id\" : 10}}";
 		
-		postRequest = post("/sand/students/")
+		postRequest = post("/sand/threads/")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(content);
 		postRequest.header("authorization", authorization);
@@ -127,13 +116,14 @@ public class StudentControllerTest {
 		result = mvc.perform(postRequest);
 		result.andDo(print());
 		result.andExpect(status().isCreated());
-		result.andExpect(jsonPath("$.user.login").value("Joachim_Schmidt"));
+		result.andExpect(jsonPath("$.title").value("Testtitle"));
 	}
-        @Test
-	public void testDelete() throws Exception {
+	
+	@Test
+	public void testEdit() throws Exception {
 		Login login = new Login();
-		login.setLogin("Rainer_Colgen");
-		login.setPassword("Rainer_Colgen");
+		login.setLogin("Dziwas_SE");
+		login.setPassword("Dziwas_SE");
 		ObjectMapper mapper = new ObjectMapper();
 		PrettyPrinter printer = new DefaultPrettyPrinter();
 		ObjectWriter writer = mapper.writer().with(printer);
@@ -148,105 +138,81 @@ public class StudentControllerTest {
 		String authorization = object.substring(7, finish);
 		System.out.println("AUTH: "+authorization);
 		
-		//generate Student JSON
-		String content = "{\"type\" : \"student\","
-				+ "\"id\" : 2,"
-				+ "\"user\" : {\"id\": 2,"
-				+ "\"deleted\" : 0,"
-				+ "\"roles\" : [ ]},"
-				+ "\"startDate\" : \"1990-08-12\","
-				+ "\"endDate\" : \"2998-12-31\","
-				+ "\"enrollmentNumber\" : \"66555\"}";
+		//generate Thread JSON
+		String content = "{\"title\" : \"Testtitle\","
+				+ "\"posts\" : [],"
+				+ "\"researchProject\" : {\"type\": \"ResearchProject\","
+				+ "\"id\" : 10}}";
 		
-		postRequest = post("/sand/students/")
+		postRequest = post("/sand/threads/")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(content);
 		postRequest.header("authorization", authorization);
 		ResultActions result;
 		result = mvc.perform(postRequest);
 		
-		//delete Student
-		MockHttpServletRequestBuilder deleteRequest = delete("/sand/students/" + mapper.readValue(result.andReturn().getResponse().getContentAsString(), Student.class).getId())
+		//edit Thread JSON
+		content = "{\"title\" : \"Testtitle2\","
+				+ "\"posts\" : [],"
+				+ "\"researchProject\" : {\"type\": \"ResearchProject\","
+				+ "\"id\" : 10}}";
+		
+		MockHttpServletRequestBuilder putRequest = put("/sand/threads/")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(content);
+		putRequest.header("authorization", authorization);
+		result = mvc.perform(putRequest);
+		result.andDo(print());
+		result.andExpect(status().isForbidden());
+	}
+	
+	@Test
+	public void testDelete() throws Exception {
+		Login login = new Login();
+		login.setLogin("Dziwas_SE");
+		login.setPassword("Dziwas_SE");
+		ObjectMapper mapper = new ObjectMapper();
+		PrettyPrinter printer = new DefaultPrettyPrinter();
+		ObjectWriter writer = mapper.writer().with(printer);
+		String json = writer.writeValueAsString(login);
+		MockHttpServletRequestBuilder postRequest = post("/sand/session/")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(json);
+		MvcResult result0= mvc.perform(postRequest).andReturn();
+		String object = (String) result0.getResponse().getContentAsString();
+		System.out.println(object);
+		int finish = object.indexOf("user")-3;
+		String authorization = object.substring(7, finish);
+		System.out.println("AUTH: "+authorization);
+		
+		//generate Thread JSON
+		String content = "{\"title\" : \"Testtitle\","
+				+ "\"posts\" : [],"
+				+ "\"researchProject\" : {\"type\": \"ResearchProject\","
+				+ "\"id\" : 10}}";
+		
+		postRequest = post("/sand/threads/")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(content);
+		postRequest.header("authorization", authorization);
+		ResultActions result;
+		result = mvc.perform(postRequest);
+		
+		//delete Thread
+		MockHttpServletRequestBuilder deleteRequest = delete("/sand/threads/" + mapper.readValue(result.andReturn().getResponse().getContentAsString(), Thread.class).getId())
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(content);
 		deleteRequest.header("authorization", authorization);
 		result = mvc.perform(deleteRequest);
 		result.andDo(print());
 		result.andExpect(status().isOk());
-		result.andExpect(content().string("true"));
-	}
-        
-        @Test
-	public void testEdit() throws Exception {
-		Login login = new Login();
-		login.setLogin("Rainer_Colgen");
-		login.setPassword("Rainer_Colgen");
-		ObjectMapper mapper = new ObjectMapper();
-		PrettyPrinter printer = new DefaultPrettyPrinter();
-		ObjectWriter writer = mapper.writer().with(printer);
-		String json = writer.writeValueAsString(login);
-		MockHttpServletRequestBuilder postRequest = post("/sand/session/")
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(json);
-		MvcResult result0= mvc.perform(postRequest).andReturn();
-		String object = (String) result0.getResponse().getContentAsString();
-		System.out.println(object);
-		int finish = object.indexOf("user")-3;
-		String authorization = object.substring(7, finish);
-		System.out.println("AUTH: "+authorization);
 		
-		//generate Student JSON
-		String content = "{\"type\" : \"student\","
-				+ "\"id\" : 2,"
-				+ "\"user\" : {\"id\": 2,"
-				+ "\"deleted\" : 0,"
-				+ "\"roles\" : [ ]},"
-				+ "\"startDate\" : \"1990-08-12\","
-				+ "\"endDate\" : \"2998-12-31\","
-				+ "\"enrollmentNumber\" : \"66555\"}";
-		
-		postRequest = post("/sand/students/")
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(content);
-		postRequest.header("authorization", authorization);
-		ResultActions result;
-		result = mvc.perform(postRequest);
-		
-		//edit Student JSON
-		content = "{\"type\" : \"student\","
-				+ "\"id\" : 2,"
-				+ "\"user\" : {\"id\": 2,"
-				+ "\"deleted\" : 0,"
-				+ "\"roles\" : [ ]},"
-				+ "\"startDate\" : \"1990-08-12\","
-				+ "\"endDate\" : \"2998-12-31\","
-				+ "\"enrollmentNumber\" : \"66556\"}";
-		
-		MockHttpServletRequestBuilder putRequest = put("/sand/students/")
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(content);
-		putRequest.header("authorization", authorization);
-		result = mvc.perform(putRequest);
+		//now try to delete non existing Thread
+		deleteRequest = delete("/sand/threads/9999");
+		deleteRequest.header("authorization", authorization);
+		result = mvc.perform(deleteRequest);
 		result.andDo(print());
-		result.andExpect(status().isOk());
-		result.andExpect(jsonPath("$.enrollmentNumber").value("66556"));
-		
-		//try editing non existing Student
-		content = "{\"type\" : \"student\","
-				+ "\"id\" : 9999,"
-				+ "\"user\" : {\"id\": 9999,"
-				+ "\"deleted\" : 0,"
-				+ "\"roles\" : [ ]},"
-				+ "\"startDate\" : \"1990-08-12\","
-				+ "\"endDate\" : \"2998-12-31\","
-				+ "\"enrollmentNumber\" : \"66556\"}";
-		
-		putRequest = put("/sand/students/")
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(content);
-		putRequest.header("authorization", authorization);
-		result = mvc.perform(putRequest);
-		result.andDo(print());
-		result.andExpect(status().isConflict());
+		result.andExpect(status().isInternalServerError());
 	}
+	
 }
