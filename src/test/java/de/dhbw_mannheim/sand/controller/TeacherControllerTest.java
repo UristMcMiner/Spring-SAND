@@ -77,7 +77,6 @@ public class TeacherControllerTest {
 		result = mvc.perform(getRequest);
 		result.andDo(print());
 		result.andExpect(status().isOk());
-		result.andExpect(jsonPath("$.user.login").value("Rainer_Colgen"));
 		getRequest = get("/sand/teachers/9999");
 		getRequest.header("authorization", authorization);
 		result = mvc.perform(getRequest);
@@ -123,7 +122,6 @@ public class TeacherControllerTest {
 		result = mvc.perform(postRequest);
 		result.andDo(print());
 		result.andExpect(status().isCreated());
-		result.andExpect(jsonPath("$.user.login").value("Joachim_Schmidt"));
 	}
 	
 	@Test
