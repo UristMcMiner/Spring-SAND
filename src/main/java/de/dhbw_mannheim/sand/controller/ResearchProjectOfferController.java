@@ -78,7 +78,7 @@ public class ResearchProjectOfferController {
         @ResponseBody
         public ResponseEntity<ResearchProjectOffer> getByUuid(
                         @RequestHeader(value="authorization", defaultValue="X") String authorization, 
-			@PathVariable(value = "uuid") int uuid) {
+			@PathVariable(value = "uuid") String uuid) {
 		try {
 			ResearchProjectOffer offer = service.getProjectByUuid(uuid+"");
                         return new ResponseEntity<>(offer, HttpStatus.OK);
