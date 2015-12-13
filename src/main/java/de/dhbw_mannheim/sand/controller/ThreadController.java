@@ -59,7 +59,9 @@ public class ThreadController {
 	@RequestHeader(value="authorization", defaultValue="X") String authorization, @RequestBody Thread thread) {
            try{            
                 int id = service.addThread(thread);
-                return new ResponseEntity<Thread>(service.getThreadById(id) , HttpStatus.CREATED);
+                Thread added = service.getThreadById(id);
+                modifyThread(added);
+                return new ResponseEntity<Thread>(added , HttpStatus.CREATED);
            }catch(Exception e){
                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
            }
