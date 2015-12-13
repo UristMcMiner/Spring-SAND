@@ -39,13 +39,13 @@ public class ResearchProjectOfferController {
 //	@Prototype
 	@RequestMapping(method = RequestMethod.GET, value = "/")
 	@ResponseBody
-	public List<ResearchProjectOffer> getAll(
+	public ResponseEntity<List<ResearchProjectOffer>> getAll(
 		@RequestHeader(value="authorization", defaultValue="X") String authorization ){
         List<ResearchProjectOffer> offers = service.getAllProjects();
         for(ResearchProjectOffer rpo:offers){
         	modifyRPO(rpo);
         }
-        return offers;   
+        return new ResponseEntity<List<ResearchProjectOffer>>(offers, HttpStatus.OK);  
 	}
         
 	/**
@@ -64,12 +64,12 @@ public class ResearchProjectOfferController {
 			ResearchProjectOffer offer = service.getProjectById(id);
             if (offer != null) {
             	modifyRPO(offer);
-                return new ResponseEntity<>(offer, HttpStatus.OK);
+                return new ResponseEntity<ResearchProjectOffer>(offer, HttpStatus.OK);
             } 
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<ResearchProjectOffer>(HttpStatus.NOT_FOUND);
 		} 
 		catch (Exception e) {
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<ResearchProjectOffer>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
         
@@ -88,10 +88,10 @@ public class ResearchProjectOfferController {
 		try {
 			ResearchProjectOffer offer = service.getProjectByUuid(uuid+"");
 			modifyRPO(offer);
-            return new ResponseEntity<>(offer, HttpStatus.OK);
+            return new ResponseEntity<ResearchProjectOffer>(offer, HttpStatus.OK);
       		} 
 		catch (Exception e) {
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<ResearchProjectOffer>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
         
@@ -111,10 +111,10 @@ public class ResearchProjectOfferController {
     		int id = service.addProject(offer);
         	ResearchProjectOffer createdOffer = service.getProjectById(id);;
         	modifyRPO(createdOffer);
-        	return new ResponseEntity<>(createdOffer, HttpStatus.OK);
+        	return new ResponseEntity<ResearchProjectOffer>(createdOffer, HttpStatus.OK);
     	}
     	catch (Exception e) {
-    		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    		return new ResponseEntity<ResearchProjectOffer>(HttpStatus.INTERNAL_SERVER_ERROR);
     	}
     }
         
@@ -134,10 +134,10 @@ public class ResearchProjectOfferController {
     		service.editProject(offer);
     		ResearchProjectOffer editedRPO = service.getProjectById(offer.getId());
     		modifyRPO(editedRPO);
-    		return new ResponseEntity<>(editedRPO, HttpStatus.OK);
+    		return new ResponseEntity<ResearchProjectOffer>(editedRPO, HttpStatus.OK);
     	}
     	catch (Exception e) {
-    		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    		return new ResponseEntity<ResearchProjectOffer>(HttpStatus.INTERNAL_SERVER_ERROR);
     	}
     }
         
@@ -155,10 +155,10 @@ public class ResearchProjectOfferController {
 		@PathVariable(value = "id") int id) {
 		try {
 			service.deleteProjectById(id);
-			return new ResponseEntity<>(HttpStatus.OK);
+			return new ResponseEntity<ResearchProjectOffer>(HttpStatus.OK);
 		}
 		catch (Exception e) {
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<ResearchProjectOffer>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
         
