@@ -42,7 +42,7 @@ public class ResearchProjectOfferControllerAuthorizationChecker implements Autho
 		List<User> listBefore = existing.getUsers();
 		List<User> listAfter  = pendingChange.getUsers();
 		if(user.isStudent() || user.isTeacher()){
-			//If User is Creator, allow change (May add or delete Interested user aswell, is allowed by the task
+			//If User is Creator, allow change (May add or delete Interested user aswell, is allowed by the task)
 			if(existing.getCreator().equals(user)) return true;
 		
 

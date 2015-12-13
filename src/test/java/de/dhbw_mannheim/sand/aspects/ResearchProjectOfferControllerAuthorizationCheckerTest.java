@@ -1,6 +1,7 @@
 package de.dhbw_mannheim.sand.aspects;
 
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
@@ -34,6 +35,7 @@ import de.dhbw_mannheim.sand.model.ResearchProjectOffer;
 import de.dhbw_mannheim.sand.model.Role;
 import de.dhbw_mannheim.sand.model.User;
 import de.dhbw_mannheim.sand.repository.ResearchProjectOfferRepository;
+import de.dhbw_mannheim.sand.service.ResearchProjectOfferService;
 import de.dhbw_mannheim.sand.service.UserService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -50,8 +52,11 @@ public class ResearchProjectOfferControllerAuthorizationCheckerTest {
 	 private ResearchProjectOfferRepository repository;
 
 	 @Autowired
-	 private UserService service;
-
+	 private UserService userService;
+	 
+	 @Autowired
+	 private ResearchProjectOfferService rpoService;
+	 
 	 @Autowired
 	 private ResearchProjectOfferControllerAuthorizationChecker checker;
 	 
@@ -61,8 +66,9 @@ public class ResearchProjectOfferControllerAuthorizationCheckerTest {
 	@Before
 	public void setUp() {
 		//Kein Student mit ResearchProject hat eine gültige Studentenrolle, muss in der Datenbank angepasst werden
-		student = service.getUserById(32);
-		teacher = service.getUserById(2);//Joachim Schmidt
+		//UPDATE 
+		student = userService.getUserById(32);
+		teacher = userService.getUserById(2);//Joachim Schmidt
 	}
 
 	@Test
@@ -84,11 +90,20 @@ public class ResearchProjectOfferControllerAuthorizationCheckerTest {
 	public void testCheckUpdate() throws Exception {
 		List<ResearchProject> rpo = student.getResearchProjects();
 		for (ResearchProject rp : rpo){
-			if(rp instanceof ResearchProjectOffer){
+			//Test Case: User is Creator
 			Assert.assertTrue(checker.checkUpdate(student, rp));
 			Assert.assertFalse(checker.checkUpdate(teacher, rp));
-			}
 		}
+		//Get a ResearchProjectOffer different from 12
+		ResearchProjectOffer test = rpoService.getProjectById(18);
+		List<User> users = new LinkedList<User>();
+		for(User u : test.getUsers()){
+			users.add(u);
+		}
+		users.add(student);
+		ResearchProjectOffer test2 = new ResearchProjectOffer(test.getId(),test.getTitle(),test.getCreator(),test.getDescription(), test.getDescriptionLong(),test.getVisible(),users,test.getThreads());
+		Assert.assertTrue(checker.checkUpdate(student, test2));
+		Assert.assertFalse(checker.checkUpdate(teacher, test2));
 	}
 	@Test
 	public void testCheckDelete() throws Exception {
