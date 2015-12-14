@@ -1,5 +1,8 @@
 package de.dhbw_mannheim.sand.aspects;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -65,10 +68,11 @@ public class ResearchProjectOfferControllerAuthorizationCheckerTest {
 	 private User teacher;
 	 private ResearchProjectOffer test;
 	@Before
-	public void setUp() {
-		//Kein Student mit ResearchProject hat eine gültige Studentenrolle, muss in der Datenbank angepasst werden
-		//UPDATE 
+	public void setUp() throws ParseException {
 		student = userService.getUserById(32);
+		//Make Role of Student valid
+		DateFormat formatter = new SimpleDateFormat("yyyy-dd-MM");
+		student.getRoles().get(0).setEndDate(formatter.parse("2080-12-12"));
 		teacher = userService.getUserById(2);//Joachim Schmidt
 		other = userService.getUserById(4);
 	}
@@ -105,6 +109,7 @@ public class ResearchProjectOfferControllerAuthorizationCheckerTest {
 			Assert.assertFalse(checker.checkUpdate(teacher, rp));
 		}
 		//Get a ResearchProjectOffer different from 12
+		//Change Users
 		ResearchProjectOffer test = rpoService.getProjectById(18);
 		List<User> users = new LinkedList<User>();
 		for(User u : test.getUsers()){
