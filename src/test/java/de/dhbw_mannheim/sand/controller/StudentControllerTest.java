@@ -74,18 +74,7 @@ public class StudentControllerTest {
 		
 		MockHttpServletRequestBuilder getRequest = get("/sand/students/9999");
 		getRequest.header("authorization", authorization);
-<<<<<<< HEAD
-		ResultActions result;
-		result = mvc.perform(getRequest);
-		result.andDo(print());
-		result.andExpect(status().isOk());
-		result.andExpect(jsonPath("$.login").value("Rainer_Colgen"));
-		getRequest = get("/sand/students/9999");
-		getRequest.header("authorization", authorization);
-		result = mvc.perform(getRequest);
-=======
 		ResultActions result = mvc.perform(getRequest);
->>>>>>> origin/rest
 		result.andExpect(status().isNotFound());
 		getRequest = get("/sand/students/5");
 		getRequest.header("authorization", authorization);
@@ -94,11 +83,7 @@ public class StudentControllerTest {
 		result.andExpect(status().isOk());
 	}        
         
-<<<<<<< HEAD
-        @Test
-=======
     @Test
->>>>>>> origin/rest
 	public void testAdd() throws Exception {
 		Login login = new Login();
 		login.setLogin("Rainer_Colgen");
@@ -119,17 +104,10 @@ public class StudentControllerTest {
 		
 		//generate Student JSON
 		String content = "{\"type\" : \"student\","
-<<<<<<< HEAD
-				+ "\"id\" : 2,"
-				+ "\"user\" : {\"id\": 2,"
-				+ "\"deleted\" : 0,"
-				+ "\"roles\" : [ ]},"
-=======
 				+ "\"user\" : {\"id\": 2,"
 				+ "\"deleted\" : 0,"
 				+ "\"roles\" : [ ]},"
 				+ "\"course\" : {\"id\" : 1},"
->>>>>>> origin/rest
 				+ "\"startDate\" : \"1990-08-12\","
 				+ "\"endDate\" : \"2998-12-31\","
 				+ "\"enrollmentNumber\" : \"66555\"}";
@@ -141,19 +119,11 @@ public class StudentControllerTest {
 		ResultActions result;
 		result = mvc.perform(postRequest);
 		result.andDo(print());
-<<<<<<< HEAD
-		result.andExpect(status().isCreated());
-		result.andExpect(jsonPath("$.user.login").value("Joachim_Schmidt"));
-	}
-        @Test
-	public void testDelete() throws Exception {
-=======
 		result.andExpect(status().isOk());
 	}
         
     @Test
 	public void testEdit() throws Exception {
->>>>>>> origin/rest
 		Login login = new Login();
 		login.setLogin("Rainer_Colgen");
 		login.setPassword("Rainer_Colgen");
@@ -173,17 +143,10 @@ public class StudentControllerTest {
 		
 		//generate Student JSON
 		String content = "{\"type\" : \"student\","
-<<<<<<< HEAD
-				+ "\"id\" : 2,"
-				+ "\"user\" : {\"id\": 2,"
-				+ "\"deleted\" : 0,"
-				+ "\"roles\" : [ ]},"
-=======
 				+ "\"user\" : {\"id\": 2,"
 				+ "\"deleted\" : 0,"
 				+ "\"roles\" : [ ]},"
 				+ "\"course\" : {\"id\" : 1},"
->>>>>>> origin/rest
 				+ "\"startDate\" : \"1990-08-12\","
 				+ "\"endDate\" : \"2998-12-31\","
 				+ "\"enrollmentNumber\" : \"66555\"}";
@@ -194,22 +157,6 @@ public class StudentControllerTest {
 		postRequest.header("authorization", authorization);
 		ResultActions result;
 		result = mvc.perform(postRequest);
-<<<<<<< HEAD
-		
-		//delete Student
-		MockHttpServletRequestBuilder deleteRequest = delete("/sand/students/" + mapper.readValue(result.andReturn().getResponse().getContentAsString(), Student.class).getId())
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(content);
-		deleteRequest.header("authorization", authorization);
-		result = mvc.perform(deleteRequest);
-		result.andDo(print());
-		result.andExpect(status().isOk());
-		result.andExpect(content().string("true"));
-	}
-        
-        @Test
-	public void testEdit() throws Exception {
-=======
 		int stuID = mapper.readValue(result.andReturn().getResponse().getContentAsString(), Student.class).getId();
 		
 		//edit Student JSON
@@ -254,7 +201,6 @@ public class StudentControllerTest {
         
     @Test
 	public void testDelete() throws Exception {
->>>>>>> origin/rest
 		Login login = new Login();
 		login.setLogin("Rainer_Colgen");
 		login.setPassword("Rainer_Colgen");
@@ -274,17 +220,10 @@ public class StudentControllerTest {
 		
 		//generate Student JSON
 		String content = "{\"type\" : \"student\","
-<<<<<<< HEAD
-				+ "\"id\" : 2,"
-				+ "\"user\" : {\"id\": 2,"
-				+ "\"deleted\" : 0,"
-				+ "\"roles\" : [ ]},"
-=======
 				+ "\"user\" : {\"id\": 2,"
 				+ "\"deleted\" : 0,"
 				+ "\"roles\" : [ ]},"
 				+ "\"course\" : {\"id\" : 1},"
->>>>>>> origin/rest
 				+ "\"startDate\" : \"1990-08-12\","
 				+ "\"endDate\" : \"2998-12-31\","
 				+ "\"enrollmentNumber\" : \"66555\"}";
@@ -296,44 +235,6 @@ public class StudentControllerTest {
 		ResultActions result;
 		result = mvc.perform(postRequest);
 		
-<<<<<<< HEAD
-		//edit Student JSON
-		content = "{\"type\" : \"student\","
-				+ "\"id\" : 2,"
-				+ "\"user\" : {\"id\": 2,"
-				+ "\"deleted\" : 0,"
-				+ "\"roles\" : [ ]},"
-				+ "\"startDate\" : \"1990-08-12\","
-				+ "\"endDate\" : \"2998-12-31\","
-				+ "\"enrollmentNumber\" : \"66556\"}";
-		
-		MockHttpServletRequestBuilder putRequest = put("/sand/students/")
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(content);
-		putRequest.header("authorization", authorization);
-		result = mvc.perform(putRequest);
-		result.andDo(print());
-		result.andExpect(status().isOk());
-		result.andExpect(jsonPath("$.enrollmentNumber").value("66556"));
-		
-		//try editing non existing Student
-		content = "{\"type\" : \"student\","
-				+ "\"id\" : 9999,"
-				+ "\"user\" : {\"id\": 9999,"
-				+ "\"deleted\" : 0,"
-				+ "\"roles\" : [ ]},"
-				+ "\"startDate\" : \"1990-08-12\","
-				+ "\"endDate\" : \"2998-12-31\","
-				+ "\"enrollmentNumber\" : \"66556\"}";
-		
-		putRequest = put("/sand/students/")
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(content);
-		putRequest.header("authorization", authorization);
-		result = mvc.perform(putRequest);
-		result.andDo(print());
-		result.andExpect(status().isConflict());
-=======
 		//delete Student
 		MockHttpServletRequestBuilder deleteRequest = delete("/sand/students/" + mapper.readValue(result.andReturn().getResponse().getContentAsString(), Student.class).getId())
 				.contentType(MediaType.APPLICATION_JSON)
@@ -343,6 +244,5 @@ public class StudentControllerTest {
 		result.andDo(print());
 		result.andExpect(status().isOk());
 		result.andExpect(content().string("true"));
->>>>>>> origin/rest
 	}
 }
