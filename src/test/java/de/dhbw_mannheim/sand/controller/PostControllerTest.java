@@ -5,9 +5,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.Date;
 
 import javax.transaction.Transactional;
 
@@ -34,14 +35,14 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 
 import de.dhbw_mannheim.sand.SAND;
 import de.dhbw_mannheim.sand.model.Login;
-import de.dhbw_mannheim.sand.model.Teacher;
+import de.dhbw_mannheim.sand.model.Post;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = SAND.class)
 @Transactional
 @Rollback(value=true)
 @WebAppConfiguration
-public class TeacherControllerTest {
+public class PostControllerTest {
 
 	@Autowired
 	private WebApplicationContext context;
@@ -71,13 +72,13 @@ public class TeacherControllerTest {
 		int finish = object.indexOf("user")-3;
 		String authorization = object.substring(7, finish);
 		System.out.println("AUTH: "+authorization);
-		MockHttpServletRequestBuilder getRequest = get("/sand/teachers/1");
+		MockHttpServletRequestBuilder getRequest = get("/sand/posts/1");
 		getRequest.header("authorization", authorization);
 		ResultActions result;
 		result = mvc.perform(getRequest);
 		result.andDo(print());
 		result.andExpect(status().isOk());
-		getRequest = get("/sand/teachers/9999");
+		getRequest = get("/sand/posts/9999");
 		getRequest.header("authorization", authorization);
 		result = mvc.perform(getRequest);
 		result.andDo(print());
@@ -102,25 +103,25 @@ public class TeacherControllerTest {
 		int finish = object.indexOf("user")-3;
 		String authorization = object.substring(7, finish);
 		System.out.println("AUTH: "+authorization);
+				
+		//generate Post JSON
+		String content = "{\"timestamp\" : " + (new Date()).getTime() + ","
+				+ "\"text\" : \"Dies ist ein Post.\","
+				+ "\"creator\" : {\"id\" : 1},"
+				+ "\"thread\" : {\"id\" : 1},"
+				+ "\"attachments\" : [],"
+				+ "\"hidden\" : false}";
 		
-		//generate Teacher JSON
-		String content = "{\"type\" : \"teacher\","
-				+ "\"user\" : {\"id\": 2,"
-				+ "\"deleted\" : 0,"
-				+ "\"roles\" : [ ]},"
-				+ "\"startDate\" : \"1990-08-12\","
-				+ "\"endDate\" : \"2998-12-31\","
-				+ "\"phone\" : \"0170-123456\","
-				+ "\"room\" : \"302B\"}";
-		
-		postRequest = post("/sand/teachers/")
+		postRequest = post("/sand/posts/")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(content);
 		postRequest.header("authorization", authorization);
-		ResultActions result;
-		result = mvc.perform(postRequest);
+		ResultActions result = mvc.perform(postRequest);
 		result.andDo(print());
 		result.andExpect(status().isCreated());
+		result.andExpect(jsonPath("$.text").value("Dies ist ein Post."));
+		result.andExpect(jsonPath("$.thread.id").value(1));
+		result.andExpect(jsonPath("$.creator.id").value(1));
 	}
 	
 	@Test
@@ -142,62 +143,54 @@ public class TeacherControllerTest {
 		String authorization = object.substring(7, finish);
 		System.out.println("AUTH: "+authorization);
 		
-		//generate Teacher JSON
-		String content = "{\"type\" : \"teacher\","
-				+ "\"user\" : {\"id\": 2,"
-				+ "\"deleted\" : 0,"
-				+ "\"roles\" : [ ]},"
-				+ "\"startDate\" : \"1990-08-12\","
-				+ "\"endDate\" : \"2998-12-31\","
-				+ "\"phone\" : \"0170-123456\","
-				+ "\"room\" : \"302B\"}";
+		//generate Post JSON
+		String content = "{\"timestamp\" : " + (new Date()).getTime() + ","
+				+ "\"text\" : \"Dies ist ein Post.\","
+				+ "\"creator\" : {\"id\" : 1},"
+				+ "\"thread\" : {\"id\" : 1},"
+				+ "\"attachments\" : [],"
+				+ "\"hidden\" : false}";
 		
-		postRequest = post("/sand/teachers/")
+		postRequest = post("/sand/posts/")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(content);
 		postRequest.header("authorization", authorization);
-		ResultActions result;
-		result = mvc.perform(postRequest);
-		int teaID = mapper.readValue(result.andReturn().getResponse().getContentAsString(), Teacher.class).getId();
+		ResultActions result = mvc.perform(postRequest);
+		int postID = mapper.readValue(result.andReturn().getResponse().getContentAsString(), Post.class).getId();
+
+		//edit Post JSON
+		content = "{\"id\" : " + postID + ","
+				+ "\"timestamp\" : " + (new Date()).getTime() + ","
+				+ "\"text\" : \"Dies ist ein geänderter Post.\","
+				+ "\"creator\" : {\"id\" : 1},"
+				+ "\"thread\" : {\"id\" : 1},"
+				+ "\"attachments\" : [],"
+				+ "\"hidden\" : false}";
 		
-		//edit Teacher JSON
-		content = "{\"type\" : \"teacher\","
-				+ "\"id\" : " + teaID + ","
-				+ "\"user\" : {\"id\": 2,"
-				+ "\"deleted\" : 0,"
-				+ "\"roles\" : [ ]},"
-				+ "\"startDate\" : \"1990-08-12\","
-				+ "\"endDate\" : \"2998-12-31\","
-				+ "\"phone\" : \"0170-123456\","
-				+ "\"room\" : \"305B\"}";
+		MockHttpServletRequestBuilder putRequest = put("/sand/posts/")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(content);
+		putRequest.header("authorization", authorization);
+		result = mvc.perform(putRequest);
+		result.andDo(print());
+		result.andExpect(status().isForbidden());
 		
-		MockHttpServletRequestBuilder putRequest = put("/sand/teachers/")
+		//edit Post JSON (set hidden to true)
+		content = "{\"id\" : " + postID + ","
+				+ "\"timestamp\" : " + (new Date()).getTime() + ","
+				+ "\"text\" : \"Dies ist ein Post.\","
+				+ "\"creator\" : {\"id\" : 1},"
+				+ "\"thread\" : {\"id\" : 1},"
+				+ "\"attachments\" : [],"
+				+ "\"hidden\" : true}";
+		
+		putRequest = put("/sand/posts/")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(content);
 		putRequest.header("authorization", authorization);
 		result = mvc.perform(putRequest);
 		result.andDo(print());
 		result.andExpect(status().isOk());
-		result.andExpect(jsonPath("$.room").value("305B"));
-		
-		//try editing non existing Teacher
-		content = "{\"type\" : \"teacher\","
-				+ "\"id\" : 9999,"
-				+ "\"user\" : {\"id\": 9999,"
-				+ "\"deleted\" : 0,"
-				+ "\"roles\" : [ ]},"
-				+ "\"startDate\" : \"1990-08-12\","
-				+ "\"endDate\" : \"2998-12-31\","
-				+ "\"phone\" : \"0170-123456\","
-				+ "\"room\" : \"300B\"}";
-		
-		putRequest = put("/sand/teachers/")
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(content);
-		putRequest.header("authorization", authorization);
-		result = mvc.perform(putRequest);
-		result.andDo(print());
-		result.andExpect(status().isConflict());
 	}
 	
 	@Test
@@ -219,32 +212,10 @@ public class TeacherControllerTest {
 		String authorization = object.substring(7, finish);
 		System.out.println("AUTH: "+authorization);
 		
-		//generate Teacher JSON
-		String content = "{\"type\" : \"teacher\","
-				+ "\"user\" : {\"id\": 2,"
-				+ "\"deleted\" : 0,"
-				+ "\"roles\" : [ ]},"
-				+ "\"startDate\" : \"1990-08-12\","
-				+ "\"endDate\" : \"2998-12-31\","
-				+ "\"phone\" : \"0170-123456\","
-				+ "\"room\" : \"302B\"}";
-		
-		postRequest = post("/sand/teachers/")
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(content);
-		postRequest.header("authorization", authorization);
-		ResultActions result;
-		result = mvc.perform(postRequest);
-		
-		//delete Teacher
-		MockHttpServletRequestBuilder deleteRequest = delete("/sand/teachers/" + mapper.readValue(result.andReturn().getResponse().getContentAsString(), Teacher.class).getId())
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(content);
+		MockHttpServletRequestBuilder deleteRequest = delete("/sand/posts/1");
 		deleteRequest.header("authorization", authorization);
-		result = mvc.perform(deleteRequest);
+		ResultActions result = mvc.perform(deleteRequest);
 		result.andDo(print());
-		result.andExpect(status().isOk());
-		result.andExpect(content().string("true"));
-	}
-	
+		result.andExpect(status().isForbidden());
+	}	
 }

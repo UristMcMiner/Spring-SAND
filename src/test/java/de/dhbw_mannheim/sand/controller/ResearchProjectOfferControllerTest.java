@@ -5,9 +5,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.List;
+import java.util.UUID;
 
 import javax.transaction.Transactional;
 
@@ -34,14 +35,14 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 
 import de.dhbw_mannheim.sand.SAND;
 import de.dhbw_mannheim.sand.model.Login;
-import de.dhbw_mannheim.sand.model.Teacher;
+import de.dhbw_mannheim.sand.model.ResearchProjectOffer;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = SAND.class)
 @Transactional
 @Rollback(value=true)
 @WebAppConfiguration
-public class TeacherControllerTest {
+public class ResearchProjectOfferControllerTest {
 
 	@Autowired
 	private WebApplicationContext context;
@@ -51,6 +52,34 @@ public class TeacherControllerTest {
 	@Before
 	public void setUp() {
 		this.mvc = MockMvcBuilders.webAppContextSetup(this.context).build();
+	}
+	
+	@Test
+	public void testGetAll() throws Exception {
+		Login login = new Login();
+		login.setLogin("Rainer_Colgen");
+		login.setPassword("Rainer_Colgen");
+		ObjectMapper mapper = new ObjectMapper();
+		PrettyPrinter printer = new DefaultPrettyPrinter();
+		ObjectWriter writer = mapper.writer().with(printer);
+		String json = writer.writeValueAsString(login);
+		MockHttpServletRequestBuilder postRequest = post("/sand/session/")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(json);
+		MvcResult result0= mvc.perform(postRequest).andReturn();
+		String object = (String) result0.getResponse().getContentAsString();
+		System.out.println(object);
+		int finish = object.indexOf("user")-3;
+		String authorization = object.substring(7, finish);
+		
+		MockHttpServletRequestBuilder getRequest = get("/sand/researchprojectoffer/");
+		getRequest.header("authorization", authorization);
+		ResultActions result;
+		result = mvc.perform(getRequest);
+		result.andDo(print());
+		result.andExpect(status().isOk());
+		List<ResearchProjectOffer> rpoList = mapper.readValue(result.andReturn().getResponse().getContentAsString(), mapper.getTypeFactory().constructCollectionType(List.class, ResearchProjectOffer.class));
+		System.out.println("Size of Researchprojectofferlist: " + rpoList.size());
 	}
 	
 	@Test
@@ -71,17 +100,51 @@ public class TeacherControllerTest {
 		int finish = object.indexOf("user")-3;
 		String authorization = object.substring(7, finish);
 		System.out.println("AUTH: "+authorization);
-		MockHttpServletRequestBuilder getRequest = get("/sand/teachers/1");
+		
+		MockHttpServletRequestBuilder getRequest = get("/sand/researchprojectoffer/2");
 		getRequest.header("authorization", authorization);
 		ResultActions result;
 		result = mvc.perform(getRequest);
 		result.andDo(print());
 		result.andExpect(status().isOk());
-		getRequest = get("/sand/teachers/9999");
+		getRequest = get("/sand/researchprojectoffer/9999");
 		getRequest.header("authorization", authorization);
 		result = mvc.perform(getRequest);
 		result.andDo(print());
 		result.andExpect(status().isNotFound());
+	}
+	
+	@Test
+	public void testGetByUuid() throws Exception {
+		Login login = new Login();
+		login.setLogin("Rainer_Colgen");
+		login.setPassword("Rainer_Colgen");
+		ObjectMapper mapper = new ObjectMapper();
+		PrettyPrinter printer = new DefaultPrettyPrinter();
+		ObjectWriter writer = mapper.writer().with(printer);
+		String json = writer.writeValueAsString(login);
+		MockHttpServletRequestBuilder postRequest = post("/sand/session/")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(json);
+		MvcResult result0= mvc.perform(postRequest).andReturn();
+		String object = (String) result0.getResponse().getContentAsString();
+		System.out.println(object);
+		int finish = object.indexOf("user")-3;
+		String authorization = object.substring(7, finish);
+		System.out.println("AUTH: "+authorization);
+		
+		MockHttpServletRequestBuilder getRequest = get("/sand/researchprojectoffer/private/fa4b5497-029a-11e5-8f22-000c29433838");
+		getRequest.header("authorization", authorization);
+		ResultActions result;
+		result = mvc.perform(getRequest);
+		result.andDo(print());
+		result.andExpect(status().isOk());
+		getRequest = get("/sand/researchprojectoffer/private/ffffffff-ffff-ffff-ffff-ffffffffffff");
+		getRequest.header("authorization", authorization);
+		result = mvc.perform(getRequest);
+		result.andDo(print());
+		result.andExpect(status().isInternalServerError());
+
 	}
 	
 	@Test
@@ -102,25 +165,26 @@ public class TeacherControllerTest {
 		int finish = object.indexOf("user")-3;
 		String authorization = object.substring(7, finish);
 		System.out.println("AUTH: "+authorization);
-		
-		//generate Teacher JSON
-		String content = "{\"type\" : \"teacher\","
-				+ "\"user\" : {\"id\": 2,"
+				
+		//generate RPO JSON
+		String content = "{\"type\" : \"offer\","
+				+ "\"title\" : \"ResearchProjectOfferTitle\","
+				+ "\"creator\" : {\"id\" : 1},"
+				+ "\"description\" : \"Beschreibung\","
+				+ "\"descriptionLong\" : \"lange Beschreibung\","
+				+ "\"threads\" : [],"
 				+ "\"deleted\" : 0,"
-				+ "\"roles\" : [ ]},"
-				+ "\"startDate\" : \"1990-08-12\","
-				+ "\"endDate\" : \"2998-12-31\","
-				+ "\"phone\" : \"0170-123456\","
-				+ "\"room\" : \"302B\"}";
+				+ "\"visible\" : true,"
+				+ "\"users\" : [{\"id\":1}],"
+				+ "\"uuid\" : \"" + UUID.randomUUID() + "\"}";
 		
-		postRequest = post("/sand/teachers/")
+		postRequest = post("/sand/researchprojectoffer/")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(content);
 		postRequest.header("authorization", authorization);
-		ResultActions result;
-		result = mvc.perform(postRequest);
+		ResultActions result = mvc.perform(postRequest);
 		result.andDo(print());
-		result.andExpect(status().isCreated());
+		result.andExpect(status().isOk());
 	}
 	
 	@Test
@@ -142,62 +206,47 @@ public class TeacherControllerTest {
 		String authorization = object.substring(7, finish);
 		System.out.println("AUTH: "+authorization);
 		
-		//generate Teacher JSON
-		String content = "{\"type\" : \"teacher\","
-				+ "\"user\" : {\"id\": 2,"
+		//generate RPO JSON
+		String content = "{\"type\" : \"offer\","
+				+ "\"title\" : \"ResearchProjectOfferTitle\","
+				+ "\"creator\" : {\"id\" : 1},"
+				+ "\"description\" : \"Beschreibung\","
+				+ "\"descriptionLong\" : \"lange Beschreibung\","
+				+ "\"threads\" : [],"
 				+ "\"deleted\" : 0,"
-				+ "\"roles\" : [ ]},"
-				+ "\"startDate\" : \"1990-08-12\","
-				+ "\"endDate\" : \"2998-12-31\","
-				+ "\"phone\" : \"0170-123456\","
-				+ "\"room\" : \"302B\"}";
+				+ "\"visible\" : true,"
+				+ "\"users\" : [{\"id\":1}],"
+				+ "\"uuid\" : \"" + UUID.randomUUID() + "\"}";
 		
-		postRequest = post("/sand/teachers/")
+		postRequest = post("/sand/researchprojectoffer/")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(content);
 		postRequest.header("authorization", authorization);
-		ResultActions result;
-		result = mvc.perform(postRequest);
-		int teaID = mapper.readValue(result.andReturn().getResponse().getContentAsString(), Teacher.class).getId();
+		ResultActions result = mvc.perform(postRequest);
+		result.andDo(print());
+		result.andExpect(status().isOk());
+		int rpoID = Integer.valueOf(result.andReturn().getResponse().getContentAsString().split("\"id\"")[1].split(",")[0].substring(1));
 		
-		//edit Teacher JSON
-		content = "{\"type\" : \"teacher\","
-				+ "\"id\" : " + teaID + ","
-				+ "\"user\" : {\"id\": 2,"
+		//edit RPO JSON
+		content = "{\"type\" : \"offer\","
+				+ "\"id\" : " + rpoID + ","
+				+ "\"title\" : \"ResearchProjectOfferTitle\","
+				+ "\"creator\" : {\"id\" : 1},"
+				+ "\"description\" : \"Beschreibung\","
+				+ "\"descriptionLong\" : \"geänderte Beschreibung\","
+				+ "\"threads\" : [],"
 				+ "\"deleted\" : 0,"
-				+ "\"roles\" : [ ]},"
-				+ "\"startDate\" : \"1990-08-12\","
-				+ "\"endDate\" : \"2998-12-31\","
-				+ "\"phone\" : \"0170-123456\","
-				+ "\"room\" : \"305B\"}";
+				+ "\"visible\" : true,"
+				+ "\"users\" : [{\"id\":1}],"
+				+ "\"uuid\" : \"" + UUID.randomUUID() + "\"}";
 		
-		MockHttpServletRequestBuilder putRequest = put("/sand/teachers/")
+		MockHttpServletRequestBuilder putRequest = put("/sand/researchprojectoffer/")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(content);
 		putRequest.header("authorization", authorization);
 		result = mvc.perform(putRequest);
 		result.andDo(print());
 		result.andExpect(status().isOk());
-		result.andExpect(jsonPath("$.room").value("305B"));
-		
-		//try editing non existing Teacher
-		content = "{\"type\" : \"teacher\","
-				+ "\"id\" : 9999,"
-				+ "\"user\" : {\"id\": 9999,"
-				+ "\"deleted\" : 0,"
-				+ "\"roles\" : [ ]},"
-				+ "\"startDate\" : \"1990-08-12\","
-				+ "\"endDate\" : \"2998-12-31\","
-				+ "\"phone\" : \"0170-123456\","
-				+ "\"room\" : \"300B\"}";
-		
-		putRequest = put("/sand/teachers/")
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(content);
-		putRequest.header("authorization", authorization);
-		result = mvc.perform(putRequest);
-		result.andDo(print());
-		result.andExpect(status().isConflict());
 	}
 	
 	@Test
@@ -219,32 +268,36 @@ public class TeacherControllerTest {
 		String authorization = object.substring(7, finish);
 		System.out.println("AUTH: "+authorization);
 		
-		//generate Teacher JSON
-		String content = "{\"type\" : \"teacher\","
-				+ "\"user\" : {\"id\": 2,"
+		//generate RPO JSON for deleting later
+		String content = "{\"type\" : \"offer\","
+				+ "\"title\" : \"ResearchProjectOfferTitle\","
+				+ "\"creator\" : {\"id\" : 1},"
+				+ "\"description\" : \"Beschreibung\","
+				+ "\"descriptionLong\" : \"lange Beschreibung\","
+				+ "\"threads\" : [],"
 				+ "\"deleted\" : 0,"
-				+ "\"roles\" : [ ]},"
-				+ "\"startDate\" : \"1990-08-12\","
-				+ "\"endDate\" : \"2998-12-31\","
-				+ "\"phone\" : \"0170-123456\","
-				+ "\"room\" : \"302B\"}";
+				+ "\"visible\" : true,"
+				+ "\"users\" : [{\"id\":1}],"
+				+ "\"uuid\" : \"" + UUID.randomUUID() + "\"}";
 		
-		postRequest = post("/sand/teachers/")
+		postRequest = post("/sand/researchprojectoffer/")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(content);
 		postRequest.header("authorization", authorization);
-		ResultActions result;
-		result = mvc.perform(postRequest);
+		ResultActions result = mvc.perform(postRequest);
+		int rpoID = Integer.valueOf(result.andReturn().getResponse().getContentAsString().split("\"id\"")[1].split(",")[0].substring(1));
 		
-		//delete Teacher
-		MockHttpServletRequestBuilder deleteRequest = delete("/sand/teachers/" + mapper.readValue(result.andReturn().getResponse().getContentAsString(), Teacher.class).getId())
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(content);
+		MockHttpServletRequestBuilder deleteRequest = delete("/sand/researchprojectoffer/" + rpoID);
 		deleteRequest.header("authorization", authorization);
 		result = mvc.perform(deleteRequest);
 		result.andDo(print());
 		result.andExpect(status().isOk());
-		result.andExpect(content().string("true"));
-	}
-	
+		
+		//try deleting non existing rpo
+		deleteRequest = delete("/sand/researchprojectoffer/9999");
+		deleteRequest.header("authorization", authorization);
+		result = mvc.perform(deleteRequest);
+		result.andDo(print());
+		result.andExpect(status().isInternalServerError());
+	}	
 }

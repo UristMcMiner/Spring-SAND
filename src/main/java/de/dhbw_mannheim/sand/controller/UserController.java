@@ -14,10 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import de.dhbw_mannheim.sand.annotations.LoggedIn;
 import de.dhbw_mannheim.sand.model.PasswordChangeRequest;
 import de.dhbw_mannheim.sand.model.ResearchProject;
-import de.dhbw_mannheim.sand.model.ResearchProjectOffer;
 import de.dhbw_mannheim.sand.model.Role;
 import de.dhbw_mannheim.sand.model.User;
 import de.dhbw_mannheim.sand.repository.UserRepository;
@@ -96,7 +94,9 @@ public class UserController {
 			return new ResponseEntity<User>(HttpStatus.CONFLICT);
 		}
 		int id = service.addUser(user);
-		return new ResponseEntity<User>(service.getUserById(id) , HttpStatus.CREATED);
+		User added = service.getUserById(id);
+		modifyUser(added);
+		return new ResponseEntity<User>(added , HttpStatus.CREATED);
 	}
 	
 	/**
@@ -120,7 +120,9 @@ public class UserController {
 		}
 		try{
 			service.editUser(user);
-			return new ResponseEntity<User>(service.getUserById(user.getId()), HttpStatus.OK);
+			User edited = service.getUserById(user.getId());
+			modifyUser(edited);
+			return new ResponseEntity<User>(edited, HttpStatus.OK);
 		}
 		catch(RuntimeException e) {
 			return new ResponseEntity<User>(HttpStatus.CONFLICT);

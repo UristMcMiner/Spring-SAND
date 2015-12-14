@@ -5,7 +5,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -34,14 +33,14 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 
 import de.dhbw_mannheim.sand.SAND;
 import de.dhbw_mannheim.sand.model.Login;
-import de.dhbw_mannheim.sand.model.Teacher;
+import de.dhbw_mannheim.sand.model.Thread;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = SAND.class)
 @Transactional
 @Rollback(value=true)
 @WebAppConfiguration
-public class TeacherControllerTest {
+public class ThreadControllerTest {
 
 	@Autowired
 	private WebApplicationContext context;
@@ -71,13 +70,13 @@ public class TeacherControllerTest {
 		int finish = object.indexOf("user")-3;
 		String authorization = object.substring(7, finish);
 		System.out.println("AUTH: "+authorization);
-		MockHttpServletRequestBuilder getRequest = get("/sand/teachers/1");
+		MockHttpServletRequestBuilder getRequest = get("/sand/threads/1");
 		getRequest.header("authorization", authorization);
 		ResultActions result;
 		result = mvc.perform(getRequest);
 		result.andDo(print());
 		result.andExpect(status().isOk());
-		getRequest = get("/sand/teachers/9999");
+		getRequest = get("/sand/threads/9999");
 		getRequest.header("authorization", authorization);
 		result = mvc.perform(getRequest);
 		result.andDo(print());
@@ -103,17 +102,13 @@ public class TeacherControllerTest {
 		String authorization = object.substring(7, finish);
 		System.out.println("AUTH: "+authorization);
 		
-		//generate Teacher JSON
-		String content = "{\"type\" : \"teacher\","
-				+ "\"user\" : {\"id\": 2,"
-				+ "\"deleted\" : 0,"
-				+ "\"roles\" : [ ]},"
-				+ "\"startDate\" : \"1990-08-12\","
-				+ "\"endDate\" : \"2998-12-31\","
-				+ "\"phone\" : \"0170-123456\","
-				+ "\"room\" : \"302B\"}";
+		//generate Thread JSON
+		String content = "{\"title\" : \"Testtitle\","
+				+ "\"posts\" : [],"
+				+ "\"researchProject\" : {\"type\": \"ResearchProject\","
+				+ "\"id\" : 10}}";
 		
-		postRequest = post("/sand/teachers/")
+		postRequest = post("/sand/threads/")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(content);
 		postRequest.header("authorization", authorization);
@@ -121,6 +116,7 @@ public class TeacherControllerTest {
 		result = mvc.perform(postRequest);
 		result.andDo(print());
 		result.andExpect(status().isCreated());
+		result.andExpect(jsonPath("$.title").value("Testtitle"));
 	}
 	
 	@Test
@@ -142,62 +138,32 @@ public class TeacherControllerTest {
 		String authorization = object.substring(7, finish);
 		System.out.println("AUTH: "+authorization);
 		
-		//generate Teacher JSON
-		String content = "{\"type\" : \"teacher\","
-				+ "\"user\" : {\"id\": 2,"
-				+ "\"deleted\" : 0,"
-				+ "\"roles\" : [ ]},"
-				+ "\"startDate\" : \"1990-08-12\","
-				+ "\"endDate\" : \"2998-12-31\","
-				+ "\"phone\" : \"0170-123456\","
-				+ "\"room\" : \"302B\"}";
+		//generate Thread JSON
+		String content = "{\"title\" : \"Testtitle\","
+				+ "\"posts\" : [],"
+				+ "\"researchProject\" : {\"type\": \"ResearchProject\","
+				+ "\"id\" : 10}}";
 		
-		postRequest = post("/sand/teachers/")
+		postRequest = post("/sand/threads/")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(content);
 		postRequest.header("authorization", authorization);
 		ResultActions result;
 		result = mvc.perform(postRequest);
-		int teaID = mapper.readValue(result.andReturn().getResponse().getContentAsString(), Teacher.class).getId();
 		
-		//edit Teacher JSON
-		content = "{\"type\" : \"teacher\","
-				+ "\"id\" : " + teaID + ","
-				+ "\"user\" : {\"id\": 2,"
-				+ "\"deleted\" : 0,"
-				+ "\"roles\" : [ ]},"
-				+ "\"startDate\" : \"1990-08-12\","
-				+ "\"endDate\" : \"2998-12-31\","
-				+ "\"phone\" : \"0170-123456\","
-				+ "\"room\" : \"305B\"}";
+		//edit Thread JSON
+		content = "{\"title\" : \"Testtitle2\","
+				+ "\"posts\" : [],"
+				+ "\"researchProject\" : {\"type\": \"ResearchProject\","
+				+ "\"id\" : 10}}";
 		
-		MockHttpServletRequestBuilder putRequest = put("/sand/teachers/")
+		MockHttpServletRequestBuilder putRequest = put("/sand/threads/")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(content);
 		putRequest.header("authorization", authorization);
 		result = mvc.perform(putRequest);
 		result.andDo(print());
-		result.andExpect(status().isOk());
-		result.andExpect(jsonPath("$.room").value("305B"));
-		
-		//try editing non existing Teacher
-		content = "{\"type\" : \"teacher\","
-				+ "\"id\" : 9999,"
-				+ "\"user\" : {\"id\": 9999,"
-				+ "\"deleted\" : 0,"
-				+ "\"roles\" : [ ]},"
-				+ "\"startDate\" : \"1990-08-12\","
-				+ "\"endDate\" : \"2998-12-31\","
-				+ "\"phone\" : \"0170-123456\","
-				+ "\"room\" : \"300B\"}";
-		
-		putRequest = put("/sand/teachers/")
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(content);
-		putRequest.header("authorization", authorization);
-		result = mvc.perform(putRequest);
-		result.andDo(print());
-		result.andExpect(status().isConflict());
+		result.andExpect(status().isForbidden());
 	}
 	
 	@Test
@@ -219,32 +185,34 @@ public class TeacherControllerTest {
 		String authorization = object.substring(7, finish);
 		System.out.println("AUTH: "+authorization);
 		
-		//generate Teacher JSON
-		String content = "{\"type\" : \"teacher\","
-				+ "\"user\" : {\"id\": 2,"
-				+ "\"deleted\" : 0,"
-				+ "\"roles\" : [ ]},"
-				+ "\"startDate\" : \"1990-08-12\","
-				+ "\"endDate\" : \"2998-12-31\","
-				+ "\"phone\" : \"0170-123456\","
-				+ "\"room\" : \"302B\"}";
+		//generate Thread JSON
+		String content = "{\"title\" : \"Testtitle\","
+				+ "\"posts\" : [],"
+				+ "\"researchProject\" : {\"type\": \"ResearchProject\","
+				+ "\"id\" : 10}}";
 		
-		postRequest = post("/sand/teachers/")
+		postRequest = post("/sand/threads/")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(content);
 		postRequest.header("authorization", authorization);
 		ResultActions result;
 		result = mvc.perform(postRequest);
 		
-		//delete Teacher
-		MockHttpServletRequestBuilder deleteRequest = delete("/sand/teachers/" + mapper.readValue(result.andReturn().getResponse().getContentAsString(), Teacher.class).getId())
+		//delete Thread
+		MockHttpServletRequestBuilder deleteRequest = delete("/sand/threads/" + mapper.readValue(result.andReturn().getResponse().getContentAsString(), Thread.class).getId())
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(content);
 		deleteRequest.header("authorization", authorization);
 		result = mvc.perform(deleteRequest);
 		result.andDo(print());
 		result.andExpect(status().isOk());
-		result.andExpect(content().string("true"));
+		
+		//now try to delete non existing Thread
+		deleteRequest = delete("/sand/threads/9999");
+		deleteRequest.header("authorization", authorization);
+		result = mvc.perform(deleteRequest);
+		result.andDo(print());
+		result.andExpect(status().isInternalServerError());
 	}
 	
 }

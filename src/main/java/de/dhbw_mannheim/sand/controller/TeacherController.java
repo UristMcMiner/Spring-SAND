@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import de.dhbw_mannheim.sand.model.Teacher;
+import de.dhbw_mannheim.sand.model.User;
 import de.dhbw_mannheim.sand.repository.TeacherRepository;
 import de.dhbw_mannheim.sand.service.TeacherService;
 
@@ -41,6 +42,7 @@ public class TeacherController {
 		System.out.println(authorization + " " + id);
 		Teacher teacher = null;
 		if ((teacher = (Teacher)service.getRoleById(id)) != null) {
+			modifyTeacher(teacher);
 			return new ResponseEntity<Teacher>(teacher, HttpStatus.OK);
 		} 
 		else {
@@ -62,7 +64,9 @@ public class TeacherController {
 	public ResponseEntity<Teacher> add(@RequestHeader(value="authorization", defaultValue="X") String authorization, @RequestBody Teacher teacher) {
 		System.out.println(authorization + " " + teacher.getUser().getLogin());
 		int id = service.addRole(teacher);
-		return new ResponseEntity<Teacher>((Teacher)service.getRoleById(id) , HttpStatus.CREATED);
+		Teacher added = (Teacher)service.getRoleById(id);
+		modifyTeacher(added);
+		return new ResponseEntity<Teacher>(added , HttpStatus.CREATED);
 	}
 	
 	/**
@@ -80,7 +84,9 @@ public class TeacherController {
 		System.out.println(authorization + " " + teacher.getId());
 		try{
 			service.editRole(teacher);
-			return new ResponseEntity<Teacher>((Teacher)service.getRoleById(teacher.getId()), HttpStatus.OK);
+			Teacher edited = (Teacher)service.getRoleById(teacher.getId());
+			modifyTeacher(edited);
+			return new ResponseEntity<Teacher>(edited, HttpStatus.OK);
 		}
 		catch(RuntimeException e){
 			return new ResponseEntity<Teacher>(HttpStatus.CONFLICT);
@@ -102,5 +108,9 @@ public class TeacherController {
 		System.out.println(authorization + " " + id);
 		service.deleteRoleById(id);
 		return new ResponseEntity<String>("true", HttpStatus.OK);
+	}
+	
+	private void modifyTeacher(Teacher teacher) {
+		teacher.setUser(new User(teacher.getUser().getId()));
 	}
 }

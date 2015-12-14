@@ -1,6 +1,11 @@
 package de.dhbw_mannheim.sand.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import de.dhbw_mannheim.sand.model.Post;
+import de.dhbw_mannheim.sand.model.PostAttachment;
+import de.dhbw_mannheim.sand.model.Thread;
 import de.dhbw_mannheim.sand.service.PostService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,16 +41,17 @@ public class PostController {
 	@RequestMapping(method = RequestMethod.GET, value = "/{id}")
 	@ResponseBody
 	public ResponseEntity<Post> getById(
-                @RequestHeader(value="authorization", defaultValue="X") String authorization, 
-                @PathVariable(value = "id") int id) {
-                try {
+    @RequestHeader(value="authorization", defaultValue="X") String authorization, @PathVariable(value = "id") int id) {
+		try {
 			Post post = service.getPostById(id);
-                        if (post != null) {
-                            return new ResponseEntity<>(post, HttpStatus.OK);
-                        } 
+            if (post != null) {
+            	modifyPost(post);
+                return new ResponseEntity<>(post, HttpStatus.OK);
+            } 
 			
-                        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		} catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		} 
+		catch (Exception e) {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -60,10 +66,11 @@ public class PostController {
 
 	@RequestMapping(method = RequestMethod.POST, value="/")
 	public ResponseEntity<Post> add(
-                @RequestHeader(value="authorization", defaultValue="X") String authorization, 
-                @RequestBody Post post) {
-                int id = service.addPost(post);
-		return new ResponseEntity<>(service.getPostById(id), HttpStatus.CREATED);
+    @RequestHeader(value="authorization", defaultValue="X") String authorization, @RequestBody Post post) {
+        int id = service.addPost(post);
+        Post added = service.getPostById(id);
+        modifyPost(added);
+		return new ResponseEntity<>(added, HttpStatus.CREATED);
 	}
 	
 	/**
@@ -77,16 +84,17 @@ public class PostController {
 	
 	@RequestMapping(method = RequestMethod.PUT, value = "/")
 	public ResponseEntity<Post> edit(
-                @RequestHeader(value="authorization", defaultValue="X") String authorization, 
-                @RequestBody Post post) {
-                    if (post.getHidden()) {
+    @RequestHeader(value="authorization", defaultValue="X") String authorization, @RequestBody Post post) {
+		if (post.getHidden()) {
 			try {
 				service.deletePostById(post.getId());
-			} catch (RuntimeException re) {
+			} 
+			catch (RuntimeException re) {
 				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 			}
-
-                        return new ResponseEntity<>(service.getPostById(post.getId()), HttpStatus.OK);
+			Post edited = service.getPostById(post.getId());
+			modifyPost(edited);
+			return new ResponseEntity<>(edited, HttpStatus.OK);
 		}
 
 		// Post not allowed to edit
@@ -103,9 +111,18 @@ public class PostController {
 
 	@RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
 	public ResponseEntity<Post> delete(
-            @RequestHeader(value="authorization", defaultValue="X") String authorization, 
-            @PathVariable(value = "id") int id) {
-                // not allowed, posts can only be hidden by putting a post with hidden = true	
-                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+    @RequestHeader(value="authorization", defaultValue="X") String authorization, @PathVariable(value = "id") int id) {
+		// not allowed, posts can only be hidden by putting a post with hidden = true	
+    	return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+	}
+	
+	private void modifyPost(Post post) {
+		Thread thread = new Thread(post.getThread().getId());
+		post.setThread(thread);
+		List<PostAttachment> postAtts = new ArrayList<>();
+		for(PostAttachment postAtt: post.getAttachments()) {
+			postAtts.add(new PostAttachment(postAtt.getId()));
+		}
+		post.setPostAttachments(postAtts);
 	}
 }
