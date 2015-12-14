@@ -10,7 +10,7 @@ public interface ThreadService {
 	 *
 	 * @return
 	 */
-	public List<Thread> getAllThreadsByResearchProjectId(int id, boolean lazy);
+	public List<Thread> getAllThreadsByResearchProjectId(int id);
 
 	/**
 	 *

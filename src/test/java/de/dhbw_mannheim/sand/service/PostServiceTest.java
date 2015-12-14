@@ -1,9 +1,6 @@
 package de.dhbw_mannheim.sand.service;
 
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.*;
 
 import java.sql.Timestamp;
@@ -70,50 +67,58 @@ public class PostServiceTest {
 		assertTrue(postService.getPostById(newPostId).getThread().getId() == post.getThread().getId());
 		assertEquals(postService.getPostById(newPostId).getTimestamp(), post.getTimestamp());
 	}
+	
 	@Test
-	public void testdeletePostById(){
+	public void testDeletePostById(){
 		Post postBefore = postService.getPostById(1);
-		assertNotNull(postBefore);
+		assertTrue(postBefore.getHidden()==false);
 		postService.deletePostById(1);
 		Post postAfter = postService.getPostById(1);
-		assertNull(postAfter);
+		assertTrue(postAfter.getHidden()==true);
 
 	}
 
 	@Test
 	public void testEditPostSuccess(){
-		Post oldPost = null;
-		
+	
 		// Test No. 1
 		int id = 1;
 		Timestamp timestamp = new Timestamp((new Date()).getTime());
 		User user = new User(1);
 		Thread thread = new Thread(1);
-		Post newPost = new Post(id, timestamp, "hi", user, thread, null, false);
-		oldPost = postService.getPostById(id);
+		Post newPost = new Post(id, timestamp, "servus", user, thread, null, false);
+		Post oldPost = postService.getPostById(id);
+		
 		postService.editPost(newPost);
 		
-		System.out.println("**************************"+oldPost);
-		System.out.println("**************************"+postService.getPostById(newPost.getId()));
-		
-		assertNotSame(oldPost, postService.getPostById(newPost.getId()));
-		assertEquals(newPost.getId(), postService.getPostById(newPost.getId()).getId());
-		assertEquals(newPost.getText(), postService.getPostById(newPost.getId()).getText());
-		assertEquals(newPost.getThread(), postService.getPostById(newPost.getId()).getThread());
-		assertEquals(newPost.getCreator(), postService.getPostById(newPost.getId()).getCreator());
-
+		String newString = postService.getPostById(id).getText();
+		assertEquals(oldPost.getId(), postService.getPostById(id).getId());
+		assertNotEquals(oldPost.getText(), newString);
+		assertEquals(oldPost.getThread(), postService.getPostById(id).getThread());
+		assertEquals(oldPost.getCreator(), postService.getPostById(id).getCreator());
+		assertNotEquals(oldPost.getTimestamp(), postService.getPostById(id).getTimestamp());
+	
 		// Test No. 2
-		/*id = 34;
+/*		id = 34;
 		user = new User(2);
 		thread = new Thread(2);
 		newPost = new Post(id, timestamp, "hallo", user, thread, null, false);
 		oldPost = postService.getPostById(id);
-		postService.editPost(newPost);
-		assertNotSame(oldPost, postService.getPostById(newPost.getId()));
-		assertEquals(newPost.getId(), postService.getPostById(newPost.getId()).getId());
-		assertEquals(newPost.getText(), postService.getPostById(newPost.getId()).getText());
-		assertEquals(newPost.getThread(), postService.getPostById(newPost.getId()).getThread());
-		assertEquals(newPost.getCreator(), postService.getPostById(newPost.getId()).getCreator());*/
+		postService.editPost(newPost);*/
+		
+		//assertNotEquals(oldPost, postService.getPostById(newPost.getId()));
+/*		assertEquals(oldPost.getId(), postService.getPostById(newPost.getId()).getId());
+		assertNotEquals(oldPost.getText(), postService.getPostById(newPost.getId()).getText());
+		assertEquals(oldPost.getThread(), postService.getPostById(newPost.getId()).getThread());
+		assertEquals(oldPost.getCreator(), postService.getPostById(newPost.getId()).getCreator());
+		assertNotEquals(oldPost.getTimestamp(), postService.getPostById(newPost.getId()).getTimestamp());*/
+	}
+	
+	@Test
+	public void testEditPostFailure(){
+		Post post1 = postService.getPostById(2);
+		post1.setId(2389232);
+		postService.editPost(post1);
 	}
 	
 	@Test

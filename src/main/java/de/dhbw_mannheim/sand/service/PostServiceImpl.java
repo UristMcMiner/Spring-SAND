@@ -49,8 +49,7 @@ public class PostServiceImpl implements PostService {
 	
 	@Override
 	@Transactional(propagation=Propagation.REQUIRED)
-	public void editPost(Post post) {
-		//postRepository.saveAndFlush(post);	
+	public void editPost(Post post) {	
 		postRepository.save(post);
 	}
 	
@@ -59,8 +58,9 @@ public class PostServiceImpl implements PostService {
 	public void deletePostById(int id) {
 		Post post = postRepository.findOne(id);
 		if(post != null){
-			postRepository.delete(post);
-		}				
+			post.setHidden(true);
+			postRepository.save(post);
+		}
 	}
 
 	@Override

@@ -1,71 +1,54 @@
-//package de.dhbw_mannheim.sand.service;
-//
-//import java.util.List;
-//
-//import javax.ejb.Stateless;
-//import javax.enterprise.inject.Alternative;
-//import javax.persistence.EntityManager;
-//import javax.persistence.PersistenceContext;
-//import javax.persistence.TypedQuery;
-//
-//import de.dhbw_mannheim.sand.model.Thread;
-//import de.dhbw_mannheim.sand.persistence.IThreadPersistence;
-//
-//@Stateless
-//@Alternative
-//public class ThreadServiceImpl implements IThreadPersistence {
-//
-//	@PersistenceContext(unitName="sand")
-//	private EntityManager entityManager;
-//	
-//	@Override
-//	public List<Thread> getAllThreadsByResearchProjectId(int id, boolean lazy) {
-//		 String jpql = "select t from Thread t where t.hidden = 0 and t.researchProject.id = "+id;
-//		 TypedQuery<Thread> query = entityManager.createQuery(jpql, Thread.class);
-//		 List<Thread> threads = query.getResultList();
-//		 if (!lazy) {
-//			 for (Thread thread: threads) {
-//				 thread.toString();
-//				 thread.getResearchProject();
-//				 thread.getPosts();
-//			 }
-//		 }
-//		 return threads;
-//	}
-//
-//	@Override
-//	public Thread getThreadById(int id) {
-//		Thread thread = entityManager.find(Thread.class, id);
-//		if (thread != null) {
-//			 thread.toString();
-//			 thread.getResearchProject();
-//			 thread.getPosts();
-//		}
-//		return thread;
-//	}
-//
-//	@Override
-//	public int addThread(Thread thread) {
-//		entityManager.persist(thread);
-//		entityManager.flush();
-//		return thread.getId();
-//	}
-//
-//	@Override
-//	public void editThread(Thread thread) {
-//		entityManager.merge(thread);
-//		entityManager.flush();
-//	}
-//
-//	@Override
-//	public void deleteThreadById(int id) {
-//		Thread thread = entityManager.find(Thread.class, id);
-//		if (thread != null) {
-//			thread.setHidden(1);
-//			entityManager.flush();
-//		} else {
-//			throw new RuntimeException();
-//		}
-//	}
-//
-//}
+package de.dhbw_mannheim.sand.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import de.dhbw_mannheim.sand.model.Thread;
+import de.dhbw_mannheim.sand.repository.ThreadRepository;
+
+@Service
+public class ThreadServiceImpl implements ThreadService {
+
+	@Autowired
+	ThreadRepository thread_rep;
+	
+	@Override
+	public List<Thread> getAllThreadsByResearchProjectId(int id) {		
+		thread_rep.findByResearchProject(id);
+		return null;
+	}
+
+	
+	//Manchmal wird hier ein Fehler angezeigt, der keiner ist.
+	//"Cannot cast from List<Thread> to Thread." Alle Input-/Return-Paramater sind Threads,
+	//es liegt also kein Fehler vor. Diese Klasse speichern löst das Problem normal.
+	@Override
+	public Thread getThreadById(int id) {
+		return thread_rep.findOne(id);
+	}
+
+	@Override
+	public int addThread(Thread thread) {
+		return (int) thread_rep.save(thread).getId();
+		
+	}
+
+	@Override
+	public void editThread(Thread thread) {
+		thread_rep.save(thread).getId();
+		
+	}
+
+	@Override
+	public void deleteThreadById(int id) {
+		Thread t = thread_rep.findOne(id);
+		if (t == null)
+			throw new IllegalArgumentException("Thread does not exist.");
+		else {
+			t.delete();
+			thread_rep.save(t);
+		}
+	}
+}
