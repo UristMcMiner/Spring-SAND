@@ -11,16 +11,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import de.dhbw_mannheim.sand.annotations.LoggedIn;
 import de.dhbw_mannheim.sand.model.Course;
 import de.dhbw_mannheim.sand.model.Student;
 import de.dhbw_mannheim.sand.model.User;
-import de.dhbw_mannheim.sand.service.RoleService;
 import de.dhbw_mannheim.sand.service.StudentService;
 
 @CrossOrigin
 @RestController
-@RequestMapping(value = "/sand/student")
+@RequestMapping(value = "/sand/students")
 public class StudentController {
 
 	@Autowired
@@ -28,8 +26,8 @@ public class StudentController {
 	
 	@RequestMapping(method = RequestMethod.GET, value = "/{id}")
 	public ResponseEntity<Student> getStudentById(
-			@RequestHeader(value="authorization", defaultValue="X") String authorization, 
-			@PathVariable(value = "id") int id) {
+		@RequestHeader(value="authorization", defaultValue="X") String authorization, 
+		@PathVariable(value = "id") int id) {
 		Student student = getStudent(id);
 		if (student != null) {
 			return new ResponseEntity<Student>(student, HttpStatus.OK);
@@ -39,7 +37,9 @@ public class StudentController {
 	}
 	
 	@RequestMapping(method=RequestMethod.POST)
-	public ResponseEntity<Student> add(@RequestBody Student student) {
+	public ResponseEntity<Student> add(
+		@RequestHeader(value="authorization", defaultValue="X") String authorization,
+		@RequestBody Student student) {
 		try {
 			student.setStartDate(new java.sql.Date(student.getStartDate().getTime()));
 			student.setEndDate(new java.sql.Date(student.getEndDate().getTime()));
@@ -53,7 +53,9 @@ public class StudentController {
 	}
 
 	@RequestMapping(method=RequestMethod.PUT)
-	public ResponseEntity<Student> edit(@RequestBody Student student) {
+	public ResponseEntity<Student> edit(
+		@RequestHeader(value="authorization", defaultValue="X") String authorization,
+		@RequestBody Student student) {
 		try {
 			service.editRole(student);
 			Student studentNew = getStudent(student.getId());
@@ -64,7 +66,9 @@ public class StudentController {
 	}
 
 	@RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
-	public ResponseEntity<String> delete(@PathVariable(value="id") int id) {
+	public ResponseEntity<String> delete(
+		@RequestHeader(value="authorization", defaultValue="X") String authorization,
+		@PathVariable(value="id") int id) {
 		try {
 			service.deleteRoleById(id);
 			return new ResponseEntity<String>("true", HttpStatus.OK);
