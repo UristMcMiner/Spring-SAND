@@ -115,5 +115,4 @@ public class Post extends LazyObject {
 	public void setHidden(Boolean hidden) {
 		this.hidden = hidden;
 	}
-
 }
