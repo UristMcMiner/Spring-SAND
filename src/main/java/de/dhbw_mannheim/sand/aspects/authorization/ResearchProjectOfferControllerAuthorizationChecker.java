@@ -4,22 +4,27 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import de.dhbw_mannheim.sand.model.LazyObject;
 import de.dhbw_mannheim.sand.model.ResearchProject;
 import de.dhbw_mannheim.sand.model.ResearchProjectOffer;
 import de.dhbw_mannheim.sand.model.User;
+import de.dhbw_mannheim.sand.model.Thread;
 import de.dhbw_mannheim.sand.repository.ResearchProjectOfferRepository;
-
+import de.dhbw_mannheim.sand.service.ResearchProjectOfferService;
+@Component
 public class ResearchProjectOfferControllerAuthorizationChecker implements AuthorizationChecker{
 	
 	@Autowired
 	private ResearchProjectOfferRepository repository;
+	@Autowired
+	private ResearchProjectOfferService service;
 	
 	@Override
 	public boolean checkGetById(User user, int id) {
 		//Problem bei der Unterscheidung von Studienarbeit und Studienarbeit-Angebot
-		ResearchProject rp = repository.getOne(id);
+		ResearchProject rp = service.getProjectById(id);
 		if(rp instanceof ResearchProjectOffer) return true;
 		return false;
 	}
@@ -33,12 +38,12 @@ public class ResearchProjectOfferControllerAuthorizationChecker implements Autho
 	public boolean checkUpdate(User user, LazyObject object) {
 		
 		ResearchProjectOffer pendingChange = (ResearchProjectOffer)object;
-		ResearchProjectOffer existing = repository.getOne(pendingChange.getId());
+		//Changed to Service
+		ResearchProjectOffer existing = service.getProjectById(pendingChange.getId());
 		List<User> listBefore = existing.getUsers();
 		List<User> listAfter  = pendingChange.getUsers();
-	
 		if(user.isStudent() || user.isTeacher()){
-			//If User is Creator, allow change (May add or delete Interested user aswell, is allowed by the task
+			//If User is Creator, allow change (May add or delete Interested user aswell, is allowed by the task)
 			if(existing.getCreator().equals(user)) return true;
 		
 
@@ -71,16 +76,22 @@ public class ResearchProjectOfferControllerAuthorizationChecker implements Autho
 		return false;
 	}
 	
-	private boolean EqualsExceptUsers(ResearchProjectOffer rpo1, ResearchProjectOffer rpo2){
-		return( rpo1.getCreator().equals(rpo2.getCreator()) &&
-				rpo1.getVisible() == rpo2.getVisible() &&
-				rpo1.getDescription().equals(rpo2.getDescription()) &&
-				rpo1.getDescriptionLong().equals(rpo2.getDescriptionLong()) &&
-				rpo1.getId() == rpo2.getId() &&
-				rpo1.getThreads().equals(rpo2.getThreads()) &&
-				rpo1.getTitle().equals(rpo2.getTitle()) &&
-				rpo1.getUuid() == rpo2.getUuid()
+	private boolean EqualsExceptUsers(ResearchProjectOffer rpo_b, ResearchProjectOffer rpo_a){
+		return( rpo_b.getCreator().equals(rpo_a.getCreator()) &&
+				rpo_b.getVisible() == rpo_a.getVisible() &&
+				rpo_b.getDescription().equals(rpo_a.getDescription()) &&
+				rpo_b.getDescriptionLong().equals(rpo_a.getDescriptionLong()) &&
+				rpo_b.getId() == rpo_a.getId() &&
+				ThreadsEqual(rpo_b.getThreads(),rpo_a.getThreads()) &&
+				rpo_b.getTitle().equals(rpo_a.getTitle())
 				);
+	}
+	private boolean ThreadsEqual(List<Thread> l_b, List<Thread> l_a){
+			boolean test = true;
+			for( Thread t : l_a){
+				if(!l_b.contains(t)) test = false;
+			}
+			return test;
 	}
 
 }

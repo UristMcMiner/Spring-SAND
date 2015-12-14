@@ -50,7 +50,8 @@ public class PostServiceImpl implements PostService {
 	@Override
 	@Transactional(propagation=Propagation.REQUIRED)
 	public void editPost(Post post) {
-		postRepository.saveAndFlush(post);		
+		//postRepository.saveAndFlush(post);	
+		postRepository.save(post);
 	}
 	
 	@Override

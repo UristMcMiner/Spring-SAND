@@ -22,6 +22,11 @@ import org.springframework.stereotype.Component;
 
 import de.dhbw_mannheim.sand.annotations.Prototype;
 import de.dhbw_mannheim.sand.aspects.authorization.AuthorizationChecker;
+import de.dhbw_mannheim.sand.aspects.authorization.PostControllerAuthorizationChecker;
+import de.dhbw_mannheim.sand.aspects.authorization.ResearchProjectOfferControllerAuthorizationChecker;
+import de.dhbw_mannheim.sand.aspects.authorization.StudentControllerAuthorizationChecker;
+import de.dhbw_mannheim.sand.aspects.authorization.ThreadControllerAuthorizationChecker;
+import de.dhbw_mannheim.sand.aspects.authorization.UserControllerAuthorizationChecker;
 import de.dhbw_mannheim.sand.model.LazyObject;
 import de.dhbw_mannheim.sand.model.Login;
 import de.dhbw_mannheim.sand.model.Role;
@@ -57,13 +62,15 @@ public class PrototypeAspect {
 	private SessionService sessionService;
 	
 	@Autowired
-	private AuthorizationChecker userControllerAuthorizationChecker;
+	private UserControllerAuthorizationChecker userControllerAuthorizationChecker;
 	@Autowired
-	private AuthorizationChecker studentControllerAuthorizationChecker;
+	private StudentControllerAuthorizationChecker studentControllerAuthorizationChecker;
 	@Autowired
-	private AuthorizationChecker researchProjectOfferControllerAuthorizationChecker;
+	private ResearchProjectOfferControllerAuthorizationChecker researchProjectOfferControllerAuthorizationChecker;
 	@Autowired
-	private AuthorizationChecker sessionControllerAuthorizationChecker;
+	private PostControllerAuthorizationChecker postControllerAuthorizationChecker;
+	@Autowired
+	private ThreadControllerAuthorizationChecker threadControllerAuthorizationChecker;
 	
 	private AuthorizationChecker authorizationChecker;
 	
@@ -107,10 +114,12 @@ public class PrototypeAspect {
 				authorizationChecker = userControllerAuthorizationChecker;
 			else if ( targetClass.equals("ResearchProjectOfferController"))
 				authorizationChecker = researchProjectOfferControllerAuthorizationChecker;
-			else if ( targetClass.equals("SessionController"))
-				authorizationChecker = sessionControllerAuthorizationChecker;
 			else if ( targetClass.equals("StudentController"))
 				authorizationChecker = studentControllerAuthorizationChecker;
+			else if ( targetClass.equals("PostController"))
+				authorizationChecker = postControllerAuthorizationChecker;
+			else if ( targetClass.equals("ThreadController"))
+				authorizationChecker = threadControllerAuthorizationChecker;
 			boolean authorized= true;//Change to false as soon as methods are implemented
 			Object param = args[1];
 			System.out.println(targetMethod);
@@ -119,6 +128,8 @@ public class PrototypeAspect {
 				case "getById": 
 				case "getStudentById":
 				case "getUserById":
+				case "getThreadById":
+				case "getPostById":
 					authorized = authorizationChecker.checkGetById(user, (Integer) param);
 					break;
 				case "add":
