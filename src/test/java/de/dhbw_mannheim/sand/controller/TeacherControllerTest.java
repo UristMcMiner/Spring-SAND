@@ -105,7 +105,6 @@ public class TeacherControllerTest {
 		
 		//generate Teacher JSON
 		String content = "{\"type\" : \"teacher\","
-				+ "\"id\" : 2,"
 				+ "\"user\" : {\"id\": 2,"
 				+ "\"deleted\" : 0,"
 				+ "\"roles\" : [ ]},"
@@ -145,7 +144,6 @@ public class TeacherControllerTest {
 		
 		//generate Teacher JSON
 		String content = "{\"type\" : \"teacher\","
-				+ "\"id\" : 2,"
 				+ "\"user\" : {\"id\": 2,"
 				+ "\"deleted\" : 0,"
 				+ "\"roles\" : [ ]},"
@@ -160,10 +158,11 @@ public class TeacherControllerTest {
 		postRequest.header("authorization", authorization);
 		ResultActions result;
 		result = mvc.perform(postRequest);
+		int teaID = mapper.readValue(result.andReturn().getResponse().getContentAsString(), Teacher.class).getId();
 		
 		//edit Teacher JSON
 		content = "{\"type\" : \"teacher\","
-				+ "\"id\" : 2,"
+				+ "\"id\" : " + teaID + ","
 				+ "\"user\" : {\"id\": 2,"
 				+ "\"deleted\" : 0,"
 				+ "\"roles\" : [ ]},"
@@ -222,7 +221,6 @@ public class TeacherControllerTest {
 		
 		//generate Teacher JSON
 		String content = "{\"type\" : \"teacher\","
-				+ "\"id\" : 2,"
 				+ "\"user\" : {\"id\": 2,"
 				+ "\"deleted\" : 0,"
 				+ "\"roles\" : [ ]},"
